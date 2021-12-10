@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menuBar>
+    <subMenu id="IZES Tools">
+      <label>IZES Tools</label>
+
+      <scriptItem>
+        <label>Build scene from outs</label>
+        <scriptCode><![CDATA[
+import hou
+from izes_tools.dccs.houdini.scene_manager import build_scene_from_outs
+
+build_scene_from_outs()
+        ]]></scriptCode>
+      </scriptItem>
+    </subMenu>
+  </menuBar>
+</mainMenu>
