@@ -10,11 +10,18 @@ import os
 import maya.cmds as cmds
 import maya
 
+global use_studiolib
+try:
+   import studiolibrary
+   use_studiolib = True
+except ImportError:
+   use_studiolib = False
+
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 def remove_shelf():
-   if cmds.shelfLayout('izes_tools', exists=True):
-      cmds.deleteUI('izes_tools')
+   if cmds.shelfLayout('IZES_Tools', exists=True):
+      cmds.deleteUI('IZES_Tools')
 
 def create_shelf():
    remove_shelf()
@@ -22,9 +29,9 @@ def create_shelf():
    maya.mel.eval('global string $izes_toolsShelf;')
    maya_version = int(cmds.about(version=True))
    if maya_version < 2017:
-      maya.mel.eval('$izes_toolsShelf = `shelfLayout -cellWidth 32 -cellHeight 32 -p $gShelfTopLevel izes_tools`;')   
+      maya.mel.eval('$izes_toolsShelf = `shelfLayout -cellWidth 32 -cellHeight 32 -p $gShelfTopLevel IZES_Tools`;')   
    else:
-      maya.mel.eval('$izes_toolsShelf = `shelfLayout -cellWidth 32 -cellHeight 32 -p $gShelfTopLevel -version \"2022\" izes_tools`;')
+      maya.mel.eval('$izes_toolsShelf = `shelfLayout -cellWidth 32 -cellHeight 32 -p $gShelfTopLevel -version \"2022\" IZES_Tools`;')
 
    shelfStyle = ('shelf' if maya_version >= 2016 else 'simple')
 
@@ -36,5 +43,15 @@ def create_shelf():
       image=os.path.join(current_dir, "icons", "massiveMultiplayer.png"),
       style='iconOnly'
    )
-   
-   cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
+
+   if(use_studiolib):
+      cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
+
+      cmds.shelfButton(
+         label='Studio Library',
+         command='import studiolibrary; studiolibrary.main()',
+         sourceType='python',
+         annotation='',
+         image=os.path.join(current_dir, "icons", "studiolib_icon.png"),
+         style='iconOnly'
+      )
