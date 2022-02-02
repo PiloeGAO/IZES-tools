@@ -10,6 +10,39 @@ import os
 from maya import cmds
 import maya.mel as mel
 
+global use_SGTK
+try:
+    import sgtk
+    use_SGTK = True
+except ImportError:
+    print("SGTK not loaded, skipping auto functions.")
+    use_SGTK = False
+
+if(use_SGTK):
+    current_engine = sgtk.platform.current_engine()
+    current_context = current_engine.context
+
+
+def createAssetStructure():
+    """Create object base structure.
+    Get object's name if sgtk is used.
+    """
+    object_name = "AssetName"
+
+    if(use_SGTK):
+        object_name = current_context.entity["name"]
+
+    cmds.createNode("transform", name=object_name)
+    cmds.createNode("transform", name="meshes_GRP", parent=object_name)
+    cmds.createNode("transform", name="HI_GRP", parent="meshes_GRP")
+    cmds.createNode("transform", name="MI_GRP", parent="meshes_GRP")
+    cmds.createNode("transform", name="LO_GRP", parent="meshes_GRP")
+    cmds.createNode("transform", name="Technical_GRP", parent="meshes_GRP")
+    cmds.createNode("transform", name="Mosaic_Baked", parent="Technical_GRP")
+    cmds.createNode("transform", name="Mosaic", parent="Technical_GRP")
+    cmds.createNode("transform", name="rig_GRP", parent=object_name)
+    cmds.createNode("transform", name="bones_GRP", parent=object_name)
+
 def export_blendshapes():
     """Export blendshapes to a selected directory.
     """
