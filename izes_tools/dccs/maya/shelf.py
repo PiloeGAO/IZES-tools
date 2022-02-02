@@ -36,11 +36,11 @@ def create_shelf():
    shelfStyle = ('shelf' if maya_version >= 2016 else 'simple')
 
    cmds.shelfButton(
-      label='Export Blendshapes',
-      command='from izes_tools.dccs.maya.shelf_commands import export_blendshapes; export_blendshapes()',
+      label='Build Asset Structure',
+      command='from izes_tools.dccs.maya.shelf_commands import createAssetStructure; createAssetStructure()',
       sourceType='python',
       annotation='',
-      image=os.path.join(current_dir, "icons", "massiveMultiplayer.png"),
+      image=os.path.join(current_dir, "icons", "menuList.png"),
       style='iconOnly'
    )
 
