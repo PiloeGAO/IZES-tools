@@ -35,6 +35,7 @@ def create_shelf():
 
    shelfStyle = ('shelf' if maya_version >= 2016 else 'simple')
 
+   # Asset Tools.
    cmds.shelfButton(
       label='Build Asset Structure',
       command='from izes_tools.dccs.maya.shelf_commands import createAssetStructure; createAssetStructure()',
@@ -44,9 +45,19 @@ def create_shelf():
       style='iconOnly'
    )
 
-   if(use_studiolib):
-      cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
+   cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
 
+   # Animation Tools.
+   cmds.shelfButton(
+      label='Setup Shot',
+      command='from izes_tools.dccs.maya.shelf_commands import setupShot; setupShot()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "video.png"),
+      style='iconOnly'
+   )
+
+   if(use_studiolib):
       cmds.shelfButton(
          label='Studio Library',
          command='import studiolibrary; studiolibrary.main()',
