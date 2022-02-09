@@ -20,7 +20,10 @@ except ImportError:
 
 if(use_SGTK):
     current_engine = sgtk.platform.current_engine()
+    tk = current_engine.sgtk
     current_context = current_engine.context
+    shotgun_instance = current_engine.shotgun
+
 
 # Assets Tools
 
@@ -62,20 +65,31 @@ def export_blendshapes():
 def setupShot():
     """Setup the shot with framerate, framerange, auto import assets.
     """
+    if(not use_SGTK): return
+
+    # Getting datas from Shotgrid.use_SGTKshotgun_instance = current_engine.shotgun
+    fields = ['id', 'code', 'sequence', 'sg_cut_in', 'sg_cut_out', 'sg_frames', 'assets']
+
+    filters = [
+        ['project', 'is', {'type': 'Project', 'id': current_engine.context.project["id"]}],
+        ["id", "is", current_engine.context.entity["id"]]
+    ]
+
+    sg_datas = shotgun_instance.find_one("Shot", filters, fields)
+
+    if(None in sg_datas):
+        print("Invalid datas from Shotgrid, skipping.")
+        return
+
     # Set main values for timeline setup.
     # Correct order is:
     # |-----------------------------------------------------------------------|
     # | startFrame | startAnimationFrame ======> endAnimationFrame | endFrame |
     # |-----------------------------------------------------------------------|
     preRoll             = 48
-    startAnimationFrame = 1000
-    endAnimationFrame   = 1240
-    postRoll            = 0
-
-    if(use_SGTK):
-        # TODO: Get framerange from fields.
-        startAnimationFrame = 1000
-        endAnimationFrame   = 1240
+    startAnimationFrame = int(sg_datas["sg_cut_in"])
+    endAnimationFrame   = int(sg_datas["sg_cut_out"])
+    postRoll            = 48
 
     # Set timeline datas.
     cmds.currentUnit( time='%sfps' % int(24)) # WARNING: Framerate must be setup before timeline !
@@ -91,7 +105,7 @@ def setupShot():
 
     createBookmark(name="PREROLL",  start=(startAnimationFrame-preRoll),            stop=(startAnimationFrame-1), color=(0.67, 0.23, 0.23))
     createBookmark(name="ANIM",     start=startAnimationFrame,   stop=endAnimationFrame,       color=(0.28, 0.69, 0.48))
-    # createBookmark(name="POSTROLL", start=(endAnimationFrame+1), stop=(endAnimationFrame+postRoll),                color=(0.67, 0.23, 0.23))
+    createBookmark(name="POSTROLL", start=(endAnimationFrame+1), stop=(endAnimationFrame+postRoll),                color=(0.67, 0.23, 0.23))
 
     del createBookmark
 
@@ -100,6 +114,4 @@ def setupShot():
     cmds.setAttr("defaultResolution.width", width)
     cmds.setAttr("defaultResolution.height", height)
 
-    if(use_SGTK):
-        # TODO: Import reference from the breakdwon.
-        pass
+    # Import References.
