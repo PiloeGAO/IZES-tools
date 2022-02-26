@@ -1,0 +1,35 @@
+***********************
+Apply Animation To Rest
+***********************
+
+.. figure:: /images/houdini_animation_apply-animation-to-rest_node.png
+   :align: right
+   :width: 255px
+
+:Category:  Animation
+:Description: Deform a rest mesh from a animation cache.
+:Version: 1.0.0
+:Location: :menuselection:`IZES --> Deformer`
+:File: animation_deformer__applyAnimationToRest.hda
+:Author: Leo Depoix (PiloeGAO)
+:License: MIT
+
+User Interface
+==============
+.. figure:: /images/houdini_animation_apply-animation-to-rest_ui.png
+   :align: center
+   :width: 526px
+
+Attributes:
+-----------
+
+* Blur Iterations: Number of iteration to apply on the blur to smooth animation [Default: 500]
+
+Node Inputs
+===========
+- Rest Geometry
+- Animated Geometry
+
+Node Outputs
+============
+- Geometry
