@@ -13,6 +13,16 @@ from izes_tools.dccs.houdini.scene_manager import build_scene_from_outs
 build_scene_from_outs()
         ]]></scriptCode>
       </scriptItem>
+      
+      <scriptItem>
+        <label>Open Documentation</label>
+        <scriptCode><![CDATA[
+import hou
+from izes_tools.utils import open_documentation
+
+open_documentation()
+        ]]></scriptCode>
+      </scriptItem>
     </subMenu>
   </menuBar>
 </mainMenu>
