@@ -44,6 +44,15 @@ def create_shelf():
       image=os.path.join(current_dir, "icons", "menuList.png"),
       style='iconOnly'
    )
+   
+   cmds.shelfButton(
+      label='Build Props Rig',
+      command='from izes_tools.dccs.maya.shelf_commands import create_props_rig; create_props_rig()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "AutoBonesGen6.png"),
+      style='iconOnly'
+   )
 
    cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
 
