@@ -10,6 +10,11 @@ import os
 from maya import cmds
 import maya.mel as mel
 
+from frankenstein import RigUtils
+rig_utils = RigUtils()
+
+from ldRigNodes.space_switch_manager import SpaceSwitchManager, SpaceSwitchType
+
 global use_SGTK
 try:
     import sgtk
@@ -60,6 +65,107 @@ def export_blendshapes():
         
         mel_cmd = 'AbcExport -j "-frameRange 1 1 -writeVisibility -dataFormat ogawa -root {} -file {}"'.format(item, outputDirectory + "/" + item.replace("|", "") + ".abc")
         mel.eval(mel_cmd)
+
+def create_props_rig():
+    """Create a simple rig for a props.
+    """
+    if(not use_SGTK): return
+
+    entity = current_context.entity
+    task = current_context.task
+    step = current_context.step
+    
+    asset_name = entity["name"]
+
+    if(asset_name in cmds.ls()):
+        cmds.delete(asset_name)
+
+    if(step["name"] != "Rig"):
+        raise RuntimeError("Incorrect Step.")
+    
+    # Find the UV task
+    fields = ["id", "sg_status_list"]
+
+    filters = [
+        ['project', 'is', {'type': 'Project', 'id': current_context.project["id"]}],
+        ["entity.Asset.id", "is", current_context.entity["id"]],
+        ["step.Step.code", "is", "uv"]
+    ]
+
+    uv_step = shotgun_instance.find("Task", filters, fields)
+
+    if(len(uv_step) != 1):
+        raise ValueError("No UV task for asset.")
+
+    uv_step = uv_step[0]
+    if(uv_step["sg_status_list"] != "apr"):
+        raise RuntimeError("Status invalid, UV must be approved to allow rigging.")
+    
+    # Get the last publish for the UV step.
+    fields = ["id", "version_number", "published_file_type", "path_cache"]
+    filters = [
+        ['project', 'is', {'type': 'Project', 'id': current_context.project["id"]}],
+        ["entity.Asset.id", "is", current_context.entity["id"]],
+        ["task.Task.id", "is", uv_step["id"]]
+    ]
+
+    publishs = shotgun_instance.find("PublishedFile", filters, fields)
+
+    abc_publishes = [publish for publish in publishs if publish["published_file_type"]["name"] == "Alembic Cache"]
+    abc_publishes_sorted = sorted(abc_publishes, key=lambda publish: publish["version_number"], reverse=True)
+
+    if(len(abc_publishes_sorted) == 0):
+        raise RuntimeError("No ABC publish for asset.")
+
+    last_abc_publish = abc_publishes_sorted[0]
+
+    path_to_abc = os.path.join("O:/", "shows", last_abc_publish["path_cache"]).replace("\\", "/")
+
+    if(os.path.isfile(path_to_abc) == False):
+        raise FileNotFoundError(f"Published file not found on disk: {path_to_abc}")
+    
+    # Import UV ABC into the scene.
+    command = f"AbcImport -mode import -debug \"{path_to_abc}\""
+    mel.eval(command)
+
+    # Creating the rig.
+    if("main_module" in cmds.ls()):
+        cmds.delete("main_module")
+
+    cmds.namespace(add="main")
+    cmds.namespace(set=":main")
+    rig_utils.createRigModule()
+
+    cmds.select(clear=True)
+    global_con = rig_utils.createRigController(5)
+    global_con.name = "SRT_global"
+    cmds.parent(global_con.name, f"main:controllers_GRP")
+    cmds.select(clear=True)
+    local_con = rig_utils.createRigController(8)
+    local_con.name = "SRT_local"
+    cmds.parent(local_con.name, f"main:SRT_global")
+    cmds.select(clear=True)
+
+    cmds.parent("main:module", f"rig_GRP")
+
+    cmds.namespace(set=":")
+    namespace_list = cmds.namespaceInfo("main", ls=True)
+    if(type(namespace_list) == None): raise RuntimeError()
+
+    for obj in namespace_list:
+        try: cmds.rename(obj, obj.replace(':', '_'))
+        except: pass
+
+    try: cmds.namespace(rm="main")
+    except: pass
+
+    obj_to_parent = ["|".join(obj.split("|")[:-1]) for obj in cmds.ls(dagObjects=True, type=['mesh'], long=True) if f"{asset_name}|meshes_GRP" in obj]
+    for mesh in obj_to_parent:
+        spaceSwitchtools = SpaceSwitchManager(nodeName=mesh)
+        spaceSwitchtools.delete_space_switch() # This is not necessary but good to have to avoid strange errors.
+        spaceSwitchtools.add_space("main_SRT_local", SpaceSwitchType.SRT)
+
+    # Done !
 
 # Animation Tools
 def setupShot():
