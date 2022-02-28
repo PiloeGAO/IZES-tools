@@ -1,3 +1,5 @@
+.. _houdini_apply-animation-to-rest:
+
 ***********************
 Apply Animation To Rest
 ***********************

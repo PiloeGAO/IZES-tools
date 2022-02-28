@@ -1,3 +1,5 @@
+.. _houdini_alembic-to-publish:
+
 ******************
 Alembic To Publish
 ******************

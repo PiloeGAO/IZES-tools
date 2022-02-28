@@ -1,3 +1,5 @@
+.. _maya_animation_tools:
+
 #############
   Animation  
 #############
