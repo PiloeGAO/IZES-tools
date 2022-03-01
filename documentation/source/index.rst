@@ -10,6 +10,7 @@ This website summarize all the informations about the tools and pipeline develop
 
 .. toctree::
    :maxdepth: 4
+   :hidden:
 
    pipeline/index.rst
    houdini/index.rst
