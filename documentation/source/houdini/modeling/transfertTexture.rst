@@ -29,11 +29,17 @@ Attributes:
 
 * Dirt Path: Path to the dirt texture, create a `dirt_color` attribute on primitives. [Default: ]
 
-Node Inputs
-===========
-- LowPoly Geometry
-- HighPoly Geometry
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Outputs
-============
-- Geometry with attributes
+   * - Inputs
+     - Outputs
+   
+   * - LowPoly Geometry
+     - Geometry with attributes
+   
+   * - HighPoly Geometry
+     - 

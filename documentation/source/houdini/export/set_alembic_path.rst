@@ -33,11 +33,14 @@ Attributes:
 
 * Object Name: Name of the geometry (usefull when multiple geometries need to be in the same group but with different name) [Default: obj]
 
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Inputs
-===========
-- Geometry
-
-Node Outputs
-============
-- Geometry
+   * - Inputs
+     - Outputs
+   
+   * - Geometry
+     - Geometry

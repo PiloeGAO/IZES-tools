@@ -27,11 +27,14 @@ Attributes:
 
 * NANs Cleaner: Remove NANs attributes on geometry. [Default: Off]
 
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Inputs
-===========
-- Broken Geometry
-
-Node Outputs
-============
-- Fixed Geometry
+   * - Inputs
+     - Outputs
+   
+   * - Broken Geometry
+     - Fixed Geometry

@@ -35,11 +35,14 @@ Attributes:
 
 * Generate UVs: Generate UVs of the extruded mosaic, warning: this is performance heavy. [Default: On]
 
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Inputs
-===========
-- Geometry
-
-Node Outputs
-============
-- Mosaic Geometry
+   * - Inputs
+     - Outputs
+   
+   * - Geometry
+     - Mosaic Geometry

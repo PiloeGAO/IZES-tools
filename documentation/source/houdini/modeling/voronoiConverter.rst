@@ -31,10 +31,14 @@ Attributes:
 
 * Multiplier: Intensify the curvature influence. [Default: 500]
 
-Node Inputs
-===========
-- Geometry To Convert
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Outputs
-============
-- Voronoid Geometry
+   * - Inputs
+     - Outputs
+   
+   * - Geometry to convert
+     - Voronoid Geometry
