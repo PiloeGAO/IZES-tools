@@ -6,6 +6,8 @@
 
 All scenes part of the Modelings Steps need to have the proper hierarchy (please see :ref:`this page <maya_modeling_tools>` automated tools).
 
+.. _pipeline_modeling-tasks_modeling:
+
 Modeling
 --------
 
@@ -18,6 +20,8 @@ In this task state, the artist must create the asset normaly like any realistic 
    :alt: Image of a correctly modeled book.
 
    Exemple of a correctly modeled book.
+
+.. _pipeline_modeling-tasks_retopo:
 
 Retopo
 ------
@@ -52,6 +56,8 @@ Steps:
 
    4. Use the :ref:`Alembic To Publish <houdini_alembic-to-publish>` node to save the alembic in the appropriate publish directory (everything is setup by using SGTK).
 
+
+.. _pipeline_modeling-tasks_uv:
 
 UV
 --

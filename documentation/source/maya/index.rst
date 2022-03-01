@@ -9,3 +9,4 @@ List of all custom tools for Maya.
 
    animation/index.rst
    modeling/index.rst
+   plugins/index.rst

@@ -28,6 +28,8 @@ This tool build the correct group struture for an asset:
     * rig_GRP
     * bones_GRP
 
+.. _maya_props-auto-rig-tool:
+
 Props Auto Rig Tool
 -------------------
 
