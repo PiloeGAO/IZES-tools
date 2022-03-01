@@ -1,8 +1,12 @@
+.. _maya_modeling_tools:
+
 ############
   Modeling  
 ############
 
 List of all custom tools for modeling.
+
+.. _maya_build-asset-structure:
 
 Build Asset Structure
 ---------------------
@@ -24,6 +28,8 @@ This tool build the correct group struture for an asset:
     * rig_GRP
     * bones_GRP
 
+.. _maya_props-auto-rig-tool:
+
 Props Auto Rig Tool
 -------------------
 
@@ -38,6 +44,6 @@ Usage
 
 1. Open the *Rig* task for the *Asset*.
 2. Click on the button.
-  The script will automaticly load the UV step and create the rig.
-  Note: The UV step need to be set to *approved* to allow the rigging.
+    The script will automaticly load the UV step and create the rig.
+    Note: The UV step need to be set to *approved* to allow the rigging.
 3. Publish the rig as usual.

@@ -1,3 +1,5 @@
+.. _houdini_set-alembic-path:
+
 ****************
 Set Alembic Path
 ****************

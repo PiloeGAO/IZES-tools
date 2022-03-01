@@ -1,3 +1,5 @@
+.. _houdini_modeling_tools:
+
 ###########
   Modeling 
 ###########

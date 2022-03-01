@@ -6,8 +6,11 @@
 Welcome to IZES-Tools's documentation!
 ======================================
 
+This website summarize all the informations about the tools and pipeline developement for IZES.
+
 .. toctree::
    :maxdepth: 4
 
+   pipeline/index.rst
    houdini/index.rst
    maya/index.rst

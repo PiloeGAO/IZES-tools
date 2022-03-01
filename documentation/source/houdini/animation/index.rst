@@ -1,3 +1,5 @@
+.. _houdini_animation_tools:
+
 ############
   Animation  
 ############
