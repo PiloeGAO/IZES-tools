@@ -19,7 +19,9 @@ Steps :
 
    2. Open the "Shotgun Load", and import all the rigs from props as **reference**.
 
-   3. Publishing the set dress **without** the cache geometry.
+   3. To place assets, move the "main_SRT_local", **not the reference**.
+
+   4. Publishing the set dress **without** the cache geometry.
    
    .. figure:: /images/pipeline_rigging_props_step0030.png
       :align: center
