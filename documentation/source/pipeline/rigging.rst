@@ -6,6 +6,16 @@
 
 Before Rigging, please check that the hierarchy of the UV file follow the guidelines of the project (:ref:`More informations can be found here <pipeline_modeling-tasks_uv>`).
 
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Inputs
+     - Outputs
+   
+   * - Modeling (.abc)
+     - Rig (.ma)
+
 The rigging pipeline step uses the following Maya Plugins:
    - :ref:`ldRigNodes <maya_plugins_ldrignodes>`
    - :ref:`frankenstein <maya_plugins_frankenstein>`

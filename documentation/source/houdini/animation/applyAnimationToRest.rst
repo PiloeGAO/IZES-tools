@@ -27,11 +27,17 @@ Attributes:
 
 * Blur Iterations: Number of iteration to apply on the blur to smooth animation [Default: 500]
 
-Node Inputs
-===========
-- Rest Geometry
-- Animated Geometry
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-Node Outputs
-============
-- Geometry
+   * - Inputs
+     - Outputs
+   
+   * - Rest Geometry
+     - Geometry
+   
+   * - Animated Geometry
+     - 

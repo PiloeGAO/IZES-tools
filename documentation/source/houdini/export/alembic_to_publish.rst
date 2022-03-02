@@ -27,6 +27,14 @@ Attributes:
 
 Same as the default `ROP Alembic` node.
 
-Node Inputs
-===========
-- Geometry
+IO
+--
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Inputs
+     - Outputs
+   
+   * - Geometry
+     - 

@@ -6,6 +6,16 @@
 
 All scenes part of the Modelings Steps need to have the proper hierarchy (please see :ref:`this page <maya_modeling_tools>` automated tools).
 
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Inputs
+     - Outputs
+   
+   * - 
+     - Modeling (.ma, .abc)
+
 .. _pipeline_modeling-tasks_modeling:
 
 Modeling
