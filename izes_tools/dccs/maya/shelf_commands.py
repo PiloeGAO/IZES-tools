@@ -167,6 +167,94 @@ def create_props_rig():
 
     # Done !
 
+def upgrade_setdressing():
+    """Upgrade the selected reference to use the Rig task instead of the UV task.
+    """
+    selection = cmds.ls(sl=True)
+
+    not_updatable = 0
+
+    for sel in selection:
+        # Get the asset datas from previous ref.
+        reference_path_raw = cmds.referenceQuery(sel, filename=True)
+        if("{" in reference_path_raw): reference_path = reference_path.split("{")[0]
+        else: reference_path = reference_path_raw
+        
+        # Get all the nodes from the original ref.
+        sub_nodes = cmds.referenceQuery(sel, nodes=True)
+        
+        # Get the object matrix of the original ref.
+        ref_object_matrix = cmds.xform(f"|{sub_nodes[0]}", m=True, q=True)
+        if(ref_object_matrix == [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]):
+            print(f"Failed to get the position {sel}")
+            not_updatable += 1
+            continue
+        
+        # Get SGTK fields.
+        ref_fields = tk.templates["asset_alembic_cache"].get_fields(reference_path)
+        
+        # Find the Rig task
+        fields = ["id", "sg_status_list"]
+
+        filters = [
+            ['project', 'is', {'type': 'Project', 'id': current_context.project["id"]}],
+            ["entity.Asset.code", "is", ref_fields["Asset"]],
+            ["step.Step.code", "is", "Rig"]
+        ]
+
+        rig_step = shotgun_instance.find("Task", filters, fields)
+        
+        if(len(rig_step) == 0):
+            print(f"No rig task for asset: {ref_fields['Asset']}")
+            not_updatable += 1
+            continue
+        
+        rig_step = rig_step[0]
+        if(rig_step["sg_status_list"] != "apr"):
+            print(f"Skipping Asset {ref_fields['Asset']} because task not approved.")
+            not_updatable += 1
+            continue
+        
+        # Get the last publish for the Rig step.
+        fields = ["id", "version_number", "name", "published_file_type", "path_cache"]
+        filters = [
+            ['project', 'is', {'type': 'Project', 'id': current_context.project["id"]}],
+            ["entity.Asset.code", "is", ref_fields["Asset"]],
+            ["task.Task.id", "is", rig_step["id"]]
+        ]
+
+        publishs = shotgun_instance.find("PublishedFile", filters, fields)
+        
+        ma_publishes = [publish for publish in publishs if publish["published_file_type"]["name"] == "Maya Scene"]
+        ma_publishes_sorted = sorted(ma_publishes, key=lambda publish: publish["version_number"], reverse=True)
+
+        if(len(ma_publishes_sorted) == 0):
+            print(f"No Rig publish for {ref_fields['Asset']}")
+            not_updatable += 1
+            continue
+        
+        last_ma_publish = ma_publishes_sorted[0]
+
+        path_to_ma = os.path.join("O:/", "shows", last_ma_publish["path_cache"]).replace("\\", "/")
+
+        if(os.path.isfile(path_to_ma) == False):
+            print(f"Published file not found on disk: {path_to_ma}")
+            not_updatable += 1
+            continue
+            
+        # Import reference for current selection.
+        rig_reference_import_path = cmds.file(path_to_ma, r=True, ns=f"{ref_fields['Asset']}_{last_ma_publish['name']}")
+        rig_reference_namespace = cmds.referenceQuery(rig_reference_import_path, namespace=True)
+
+        # Move the rig object.
+        cmds.xform(f"{rig_reference_namespace}:main_SRT_local", matrix=ref_object_matrix)
+        
+        # Remove old reference.
+        cmds.file(reference_path_raw, removeReference=True)
+
+    # Print stats.
+    print(f"{len(selection) - not_updatable}/{len(selection)}")
+
 # Animation Tools
 def setupShot():
     """Setup the shot with framerate, framerange, auto import assets.

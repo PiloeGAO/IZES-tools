@@ -47,3 +47,23 @@ Usage
     The script will automaticly load the UV step and create the rig.
     Note: The UV step need to be set to *approved* to allow the rigging.
 3. Publish the rig as usual.
+
+.. _maya_upgrade-setdressing:
+
+Props Auto Rig Tool
+-------------------
+
+.. figure:: /images/maya_upgrade-setdressing_icon.png
+   :align: left
+   :width: 32px
+
+This tool upgrade the selected references from UV Task to Rig Task by keeping the transforms.
+
+*All objects need to be at the root of the scene (nothing in groups).*
+
+Usage
+=====
+
+1. Select all the references you want to convert (objects with the blue icon in the outliner).
+2. Click on the button.
+3. Check the console for failed imports.

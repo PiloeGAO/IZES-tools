@@ -53,6 +53,15 @@ def create_shelf():
       image=os.path.join(current_dir, "icons", "AutoBonesGen6.png"),
       style='iconOnly'
    )
+   
+   cmds.shelfButton(
+      label='Upgrade SetDressing to Rigs',
+      command='from izes_tools.dccs.maya.shelf_commands import upgrade_setdressing; upgrade_setdressing()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "diamond.png"),
+      style='iconOnly'
+   )
 
    cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
 
