@@ -10,3 +10,4 @@ List of all steps of the pipeline with informations about inputs and outputs.
    modeling.rst
    rigging.rst
    setdressing.rst
+   shading.rst
