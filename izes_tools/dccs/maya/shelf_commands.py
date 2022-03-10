@@ -177,11 +177,15 @@ def upgrade_setdressing():
     for sel in selection:
         # Get the asset datas from previous ref.
         reference_path_raw = cmds.referenceQuery(sel, filename=True)
-        if("{" in reference_path_raw): reference_path = reference_path.split("{")[0]
+        if("{" in reference_path_raw): reference_path = reference_path_raw.split("{")[0]
         else: reference_path = reference_path_raw
         
         # Get all the nodes from the original ref.
         sub_nodes = cmds.referenceQuery(sel, nodes=True)
+
+        if(sub_nodes == None):
+            print(f"Failed to get the reference node {sel}")
+            continue
         
         # Get the object matrix of the original ref.
         ref_object_matrix = cmds.xform(f"|{sub_nodes[0]}", m=True, q=True)
