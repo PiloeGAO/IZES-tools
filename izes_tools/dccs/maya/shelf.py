@@ -41,7 +41,7 @@ def create_shelf():
       command='from izes_tools.dccs.maya.shelf_commands import createAssetStructure; createAssetStructure()',
       sourceType='python',
       annotation='',
-      image=os.path.join(current_dir, "icons", "menuList.png"),
+      image=os.path.join(current_dir, "icons", "BuildAssetStructure2.png"),
       style='iconOnly'
    )
    
@@ -59,7 +59,7 @@ def create_shelf():
       command='from izes_tools.dccs.maya.shelf_commands import upgrade_setdressing; upgrade_setdressing()',
       sourceType='python',
       annotation='',
-      image=os.path.join(current_dir, "icons", "diamond.png"),
+      image=os.path.join(current_dir, "icons", "Convert3.png"),
       style='iconOnly'
    )
 
@@ -71,7 +71,16 @@ def create_shelf():
       command='from izes_tools.dccs.maya.shelf_commands import setupShot; setupShot()',
       sourceType='python',
       annotation='',
-      image=os.path.join(current_dir, "icons", "video.png"),
+      image=os.path.join(current_dir, "icons", "ShotSetup4.png"),
+      style='iconOnly'
+   )
+
+   cmds.shelfButton(
+      label='Attach Backpack to Joy',
+      command='from izes_tools.dccs.maya.shelf_commands import attach_backpack_to_joy; attach_backpack_to_joy()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "AttachBackpackToJoy5.png"),
       style='iconOnly'
    )
 
