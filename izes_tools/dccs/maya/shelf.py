@@ -62,6 +62,15 @@ def create_shelf():
       image=os.path.join(current_dir, "icons", "Convert3.png"),
       style='iconOnly'
    )
+   
+   cmds.shelfButton(
+      label='Rename namespaces for assets',
+      command='from izes_tools.dccs.maya.shelf_commands import rename_assets; rename_assets()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "Convert3.png"),
+      style='iconOnly'
+   )
 
    cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
 
