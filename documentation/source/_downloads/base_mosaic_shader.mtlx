@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<materialx version="1.37">
+  <material name="/mat/Base_material_mosaic">
+    <shaderref name="/mat/Base_material_mosaic/standard_surface1" node="standard_surface">
+      <bindinput name="base_color" type="color3" nodegraph="NG_/mat/Base_material_mosaic/multiply9" output="out" />
+      <bindinput name="diffuse_roughness" type="float" value="0.841" />
+      <bindinput name="specular_roughness" type="color3" nodegraph="NG_/mat/Base_material_mosaic/add5" output="output1" />
+      <bindinput name="specular_IOR" type="float" value="1.33" />
+      <bindinput name="subsurface_color" type="color3" value="1, 1, 0.292" />
+      <bindinput name="sheen_color" type="color3" value="1, 1, 0.777" />
+      <bindinput name="sheen_roughness" type="float" value="0" />
+      <bindinput name="normal" type="color3" nodegraph="NG_/mat/Base_material_mosaic/utility2" output="out" />
+      <bindinput name="coat" type="float" value="0.5" />
+      <bindinput name="coat_color" type="color3" value="0.934, 0.871186, 0.849006" />
+      <bindinput name="coat_roughness" type="float" value="0.184" />
+    </shaderref>
+  </material>
+  <nodegraph name="NG_/mat/Base_material_mosaic/multiply9">
+    <multiply name="/mat/Base_material_mosaic/multiply9" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/multiply7" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/color_correct2" />
+    </multiply>
+    <multiply name="/mat/Base_material_mosaic/multiply7" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/mix_rgba1" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/range7" />
+    </multiply>
+    <mix_rgba name="/mat/Base_material_mosaic/mix_rgba1" type="color4">
+      <input name="input1" type="color4" nodename="/mat/Base_material_mosaic/add6" />
+      <input name="input2" type="color4" value="1, 1, 1, 1" />
+      <input name="mix" type="float" nodename="/mat/Base_material_mosaic/multiply5" />
+    </mix_rgba>
+    <add name="/mat/Base_material_mosaic/add6" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/ramp_rgb1" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/range5" />
+    </add>
+    <ramp_rgb name="/mat/Base_material_mosaic/ramp_rgb1" type="color3">
+      <input name="input" type="float" nodename="/mat/Base_material_mosaic/user_data_float1" />
+      <input name="position" type="floatarray" value="0, 0.0973783, 0.312734, 0.773408, 1" />
+      <input name="color" type="floatarray" value="0.755, 0.685003, 0.468387, 0.586142, 0.45602, 0.053339, 0.215, 0.083516, 0.788, 0.586142, 0.204, 0.586142, 0.04, 0.03356, 0.03356" />
+      <input name="interpolation" type="integerarray" value="1, 1, 1, 1, 1" />
+      <input name="use_implicit_uvs" type="string" value="on" />
+    </ramp_rgb>
+    <user_data_float name="/mat/Base_material_mosaic/user_data_float1" type="float">
+      <input name="attribute" type="string" value="random" />
+      <input name="default" type="float" value="1" />
+    </user_data_float>
+    <range name="/mat/Base_material_mosaic/range5" type="color3">
+      <input name="input_max" type="float" value="0.132" />
+      <input name="output_max" type="float" value="0.266" />
+    </range>
+    <multiply name="/mat/Base_material_mosaic/multiply5" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/ramp_rgb1" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/multiply8" />
+    </multiply>
+    <multiply name="/mat/Base_material_mosaic/multiply8" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/curvature3" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/range4" />
+    </multiply>
+    <curvature name="/mat/Base_material_mosaic/curvature3" type="color3">
+      <input name="radius" type="float" value="0.007" />
+      <input name="bias" type="float" value="0.41" />
+      <input name="multiply" type="float" value="4" />
+    </curvature>
+    <range name="/mat/Base_material_mosaic/range4" type="color3">
+      <input name="input" type="color3" nodename="/mat/Base_material_mosaic/cell_noise10" />
+      <input name="input_min" type="float" value="0.14" />
+      <input name="input_max" type="float" value="0.332" />
+      <input name="output_max" type="float" value="0.705" />
+      <input name="contrast" type="float" value="3.63" />
+      <input name="gain" type="float" value="0.587" />
+    </range>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise10" type="color3">
+      <input name="octaves" type="integer" value="5" />
+      <input name="lacunarity" type="float" value="2" />
+      <input name="amplitude" type="float" value="3.75" />
+      <input name="scale" type="vector3" value="10, 10, 10" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="color" type="color3" value="0.471, 0.471, 0.471" />
+      <input name="palette" type="color3" value="0.566, 0.566, 0.566" />
+    </cell_noise>
+    <range name="/mat/Base_material_mosaic/range7" type="color3">
+      <input name="input" type="color3" nodename="/mat/Base_material_mosaic/ambient_occlusion2" />
+      <input name="input_max" type="float" value="0.607" />
+      <input name="output_max" type="float" value="0.897" />
+      <input name="contrast" type="float" value="1.5" />
+    </range>
+    <ambient_occlusion name="/mat/Base_material_mosaic/ambient_occlusion2" type="color3" />
+    <color_correct name="/mat/Base_material_mosaic/color_correct2" type="color4">
+      <input name="input" type="color4" nodename="/mat/Base_material_mosaic/ramp_rgb1" />
+      <input name="exposure" type="float" value="1.52" />
+      <input name="multiply" type="color3" value="0.438, 0.438, 0.438" />
+      <input name="add" type="color3" nodename="/mat/Base_material_mosaic/range8" />
+    </color_correct>
+    <range name="/mat/Base_material_mosaic/range8" type="color3">
+      <input name="input" type="color3" nodename="/mat/Base_material_mosaic/utility3" />
+      <input name="input_max" type="float" value="0.682" />
+      <input name="output_min" type="float" value="0.616" />
+      <input name="contrast" type="float" value="0.01" />
+      <input name="contrast_pivot" type="float" value="1" />
+      <input name="gain" type="float" value="0.507" />
+    </range>
+    <utility name="/mat/Base_material_mosaic/utility3" type="color3">
+      <input name="color_mode" type="string" value="uniformid" />
+      <input name="shade_mode" type="string" value="flat" />
+      <input name="overlay_mode" type="string" value="polywire" />
+      <input name="color" type="color3" nodename="/mat/Base_material_mosaic/cell_noise11" />
+    </utility>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise11" type="color3">
+      <input name="lacunarity" type="float" value="3.35" />
+      <input name="amplitude" type="float" value="5.93" />
+      <input name="scale" type="vector3" value="50, 50, 50" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="density" type="float" value="0.08" />
+    </cell_noise>
+    <output name="out" type="color3" nodename="/mat/Base_material_mosaic/multiply9" />
+  </nodegraph>
+  <nodegraph name="NG_/mat/Base_material_mosaic/add5">
+    <add name="/mat/Base_material_mosaic/add5" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/multiply4" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/add2" />
+    </add>
+    <multiply name="/mat/Base_material_mosaic/multiply4" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/curvature2" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/range2" />
+    </multiply>
+    <curvature name="/mat/Base_material_mosaic/curvature2" type="color3">
+      <input name="radius" type="float" value="0.025" />
+    </curvature>
+    <range name="/mat/Base_material_mosaic/range2" type="color3">
+      <input name="input" type="color3" nodename="/mat/Base_material_mosaic/cell_noise8" />
+      <input name="input_min" type="float" value="0.029" />
+      <input name="input_max" type="float" value="0.625" />
+      <input name="contrast" type="float" value="3.15" />
+    </range>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise8" type="color3">
+      <input name="octaves" type="integer" value="4" />
+      <input name="lacunarity" type="float" value="5" />
+      <input name="amplitude" type="float" value="4" />
+      <input name="scale" type="vector3" value="10, 10, 10" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="color" type="color3" value="0.471, 0.471, 0.471" />
+      <input name="palette" type="color3" value="0.566, 0.566, 0.566" />
+    </cell_noise>
+    <add name="/mat/Base_material_mosaic/add2" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/add1" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/ramp_float4" />
+    </add>
+    <add name="/mat/Base_material_mosaic/add1" type="color3">
+      <input name="input1" type="color3" nodename="/mat/Base_material_mosaic/ramp_float1" />
+      <input name="input2" type="color3" nodename="/mat/Base_material_mosaic/ramp_float3" />
+    </add>
+    <ramp_float name="/mat/Base_material_mosaic/ramp_float1" type="float">
+      <input name="type" type="string" value="u" />
+      <input name="input" type="float" nodename="/mat/Base_material_mosaic/cell_noise1" />
+      <input name="position" type="floatarray" value="0, 1" />
+      <input name="value" type="floatarray" value="0.291667, 0.395833" />
+      <input name="interpolation" type="integerarray" value="1, 1" />
+    </ramp_float>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise1" type="color3">
+      <input name="octaves" type="integer" value="2" />
+      <input name="randomness" type="float" value="0.566" />
+      <input name="lacunarity" type="float" value="7.33" />
+      <input name="amplitude" type="float" value="4.57" />
+      <input name="scale" type="vector3" value="100, 100, 100" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="color" type="color3" value="0.485, 0.485, 0.485" />
+      <input name="palette" type="color3" value="0.566, 0.566, 0.566" />
+      <input name="density" type="float" value="0.152" />
+    </cell_noise>
+    <ramp_float name="/mat/Base_material_mosaic/ramp_float3" type="float">
+      <input name="input" type="float" nodename="/mat/Base_material_mosaic/cell_noise2" />
+      <input name="position" type="floatarray" value="0, 1" />
+      <input name="value" type="floatarray" value="0.25, 0.4375" />
+      <input name="interpolation" type="integerarray" value="1, 1" />
+    </ramp_float>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise2" type="color3">
+      <input name="octaves" type="integer" value="2" />
+      <input name="randomness" type="float" value="0.566" />
+      <input name="lacunarity" type="float" value="7.33" />
+      <input name="amplitude" type="float" value="4.57" />
+      <input name="scale" type="vector3" value="50, 50, 50" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="color" type="color3" value="0, 0.485, 0.485" />
+      <input name="palette" type="color3" value="0.801684, 0, 0.801684" />
+      <input name="density" type="float" value="1" />
+    </cell_noise>
+    <ramp_float name="/mat/Base_material_mosaic/ramp_float4" type="float">
+      <input name="type" type="string" value="diagonal" />
+      <input name="input" type="float" nodename="/mat/Base_material_mosaic/cell_noise6" />
+      <input name="position" type="floatarray" value="0, 1" />
+      <input name="value" type="floatarray" value="0.05, 0.5625" />
+      <input name="interpolation" type="integerarray" value="1, 1" />
+      <input name="use_implicit_uvs" type="string" value="on" />
+      <input name="wrap_uvs" type="boolean" value="true" />
+    </ramp_float>
+    <cell_noise name="/mat/Base_material_mosaic/cell_noise6" type="color3">
+      <input name="pattern" type="string" value="cell2" />
+      <input name="octaves" type="integer" value="2" />
+      <input name="lacunarity" type="float" value="8.11" />
+      <input name="amplitude" type="float" value="1.98" />
+      <input name="scale" type="vector3" value="100, 10, 10" />
+      <input name="offset" type="vector3" value="0, 10, 0" />
+      <input name="pref_name" type="string" value="rest" />
+      <input name="color" type="color3" value="0.314, 0.132257, 0.0806715" />
+      <input name="palette" type="color3" value="0.102, 0.102, 0.102" />
+      <input name="density" type="float" value="0.633" />
+    </cell_noise>
+    <output name="output1" type="color3" nodename="/mat/Base_material_mosaic/add5" channels="r" />
+  </nodegraph>
+  <nodegraph name="NG_/mat/Base_material_mosaic/utility2">
+    <utility name="/mat/Base_material_mosaic/utility2" type="color3">
+      <input name="color_mode" type="string" value="n" />
+    </utility>
+    <output name="out" type="color3" nodename="/mat/Base_material_mosaic/utility2" />
+  </nodegraph>
+</materialx>

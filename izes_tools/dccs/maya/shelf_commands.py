@@ -258,6 +258,26 @@ def upgrade_setdressing():
     # Print stats.
     print(f"{len(selection) - not_updatable}/{len(selection)}")
 
+def rename_assets():
+    """ Rename the selection to set the asset name and the instance number in the namespace.
+    """
+    already_fixed = []
+
+    for sel in cmds.ls(sl=True):
+        rig_path = cmds.referenceQuery(sel, filename=True)
+        asset_name = rig_path.split("/")[5]
+        
+        instance_number = 1
+        new_name = f"{asset_name}_{str(instance_number).zfill(3)}"
+        
+        while new_name in already_fixed:
+            instance_number += 1
+            new_name = f"{asset_name}_{str(instance_number).zfill(3)}"
+        
+        already_fixed.append(new_name)
+        
+        cmds.namespace(rename=[f":{sel.split(':')[0]}", new_name])
+
 # Animation Tools
 def setupShot():
     """Setup the shot with framerate, framerange, auto import assets.
