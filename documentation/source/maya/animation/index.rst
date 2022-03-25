@@ -16,6 +16,15 @@ Setup Shot
 This tool connect to shotgrid and setup the length of the shot.
 **You need to load a shot from ShotGun Tank to access this feature.**
 
+Attach Backpack to Joy
+----------------------
+
+.. figure:: /images/maya_attach-backpack_icon.png
+   :align: left
+   :width: 32px
+
+This tool connect the Backpack rig to Joy by using the :ref:`ldRigNodes <maya_plugins_ldrignodes>` SpaceSwitches.
+Please select the reference of backpack and then of Joy before clicking.
 
 Studio Library
 --------------
