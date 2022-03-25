@@ -68,7 +68,7 @@ def create_shelf():
       command='from izes_tools.dccs.maya.shelf_commands import rename_assets; rename_assets()',
       sourceType='python',
       annotation='',
-      image=os.path.join(current_dir, "icons", "Convert3.png"),
+      image=os.path.join(current_dir, "icons", "RenameAssets6.png"),
       style='iconOnly'
    )
 

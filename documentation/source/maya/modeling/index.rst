@@ -67,3 +67,20 @@ Usage
 1. Select all the references you want to convert (objects with the blue icon in the outliner).
 2. Click on the button.
 3. Check the console for failed imports.
+
+.. _maya_rename-assets:
+
+Rename Assets for Shots
+-----------------------
+
+.. figure:: /images/maya_rename-assets_icon.png
+   :align: left
+   :width: 32px
+
+This tool upgrade the selected references groups to the correct naming (assetName_001, assetName_002...).
+
+Usage
+=====
+
+1. Select all the references groups you want to rename.
+2. Click on the button.
