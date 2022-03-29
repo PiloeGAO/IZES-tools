@@ -702,3 +702,62 @@ def attach_backpack_to_joy():
                     
             spaceSwitchtools = SpaceSwitchManager(nodeName=f"{namespace}:{object}")
             spaceSwitchtools.add_space(f"{target_namespace}:{target_object}", SpaceSwitchType.SRT, weight=target_weight)
+
+def export_animation():
+    """Export selection to animation publish directory.
+    """
+    # Ask for Version.
+    version = cmds.promptDialog(
+        title='Export Animation',
+        message='Enter Version:',
+        button=['OK', 'Cancel'],
+        defaultButton='OK',
+        cancelButton='Cancel',
+        dismissString='Cancel'
+    )
+
+    if version != 'OK':
+        print("Export aborded.")
+        return
+
+    version_number = str(cmds.promptDialog(query=True, text=True))
+
+    # Get shot datas from path.
+    scene_path = cmds.file(q=True, sn=True)
+    sequence = scene_path.split("/")[4]
+    shot = scene_path.split("/")[5]
+
+    in_frame = int(cmds.playbackOptions(query=True, animationStartTime=True))
+    out_frame = int(cmds.playbackOptions(query=True, animationEndTime=True))
+
+    # Export each elements.
+    for i, elem in enumerate(cmds.ls(sl=True)):
+        asset = elem.split(":")[0]
+        instance = elem.split(":")[0].split("_")[-1]
+        
+        output_path = os.path.join(
+            "O:\\shows",
+            "IZES",
+            "sequences",
+            sequence,
+            shot,
+            "publishs",
+            "ANM",
+            f"v{version_number.zfill(3)}",
+            "caches",
+            f"ANM_{sequence}_{shot}_{asset}.v{version_number.zfill(3)}.abc"    
+        )
+        
+        output_dir = os.path.dirname(output_path)
+        
+        if(os.path.isdir(output_dir) == False):
+            os.makedirs(output_dir)
+        
+        # Export ABC
+        output_path = output_path.replace("\\", "/")
+        command = f'AbcExport2 -j "-frameRange {in_frame} {out_frame} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa -root |{elem} -file {output_path}";'
+        # print(command)
+        print(f"Exporting {i+1}/{len(cmds.ls(sl=True))}")
+        mel.eval(command)
+
+    print("Export DONE")
