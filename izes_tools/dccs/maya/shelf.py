@@ -102,3 +102,12 @@ def create_shelf():
          image=os.path.join(current_dir, "icons", "studiolib_icon.png"),
          style='iconOnly'
       )
+   
+   cmds.shelfButton(
+      label='Export Selection To Publish',
+      command='from izes_tools.dccs.maya.shelf_commands import export_animation; export_animation()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
+      style='iconOnly'
+   )
