@@ -276,7 +276,18 @@ def rename_assets():
         
         already_fixed.append(new_name)
         
-        cmds.namespace(rename=[f":{sel.split(':')[0]}", new_name])
+        current_namespace = f":{sel.split(':')[0]}"
+
+        print(f"Working on {current_namespace}")
+
+        if(cmds.namespace(exists=new_name)):
+            # This is needed in case of existing namespace.
+            cmds.namespace(rename=[current_namespace, "temp"])
+            current_namespace = "temp"
+
+        cmds.namespace(rename=[current_namespace, new_name])
+    
+    print("DONE")
 
 # Animation Tools
 def setupShot():

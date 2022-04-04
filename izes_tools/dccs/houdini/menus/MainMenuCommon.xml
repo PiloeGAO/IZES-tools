@@ -15,6 +15,16 @@ build_scene_from_outs()
       </scriptItem>
       
       <scriptItem>
+        <label>Fix AO Nodes in Shader.</label>
+        <scriptCode><![CDATA[
+import hou
+from izes_tools.dccs.houdini import fix_AO
+
+fix_AO()
+        ]]></scriptCode>
+      </scriptItem>
+      
+      <scriptItem>
         <label>Open Documentation</label>
         <scriptCode><![CDATA[
 import hou
