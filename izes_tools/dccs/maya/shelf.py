@@ -111,3 +111,15 @@ def create_shelf():
       image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
       style='iconOnly'
    )
+
+   cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
+
+   # DEBUG Tools.
+   cmds.shelfButton(
+      label='Pack Scene',
+      command='from izes_tools.dccs.maya.data_management import pack_scene; pack_scene()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "ShotSetup4.png"),
+      style='iconOnly'
+   )
