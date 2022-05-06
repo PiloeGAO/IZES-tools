@@ -116,6 +116,15 @@ def create_shelf():
    )
 
    cmds.shelfButton(
+      label='Export Set Dressing To Publish',
+      command='from izes_tools.dccs.maya.data_management import export_setdressing; export_setdressing()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
+      style='iconOnly'
+   )
+
+   cmds.shelfButton(
       label='Pack Scene',
       command='from izes_tools.dccs.maya.data_management import pack_scene; pack_scene()',
       sourceType='python',
