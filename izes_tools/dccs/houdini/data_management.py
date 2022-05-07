@@ -86,6 +86,8 @@ class ShotImporter:
             "characterVersions",
             "Characters",
             ["-----[Select]-----"],
+            script_callback="hou.phm().importer.create_characters_nodes(kwargs['node'])",
+            script_callback_language=hou.scriptLanguage.Python,
         ))
         
         # Add animated version parameter.
@@ -228,7 +230,62 @@ class ShotImporter:
             print("Can't open shot, due to invalid selection.")
             return
         
-        print(all_settings, sep="\n")
+        # Clean the node before generating the whole content.
+        self.remove_assets(hou_node)
+        self.remove_materialx(hou_node)
+    
+        # Import characters.
+        self.create_characters_nodes(hou_node)
+
+    def create_characters_nodes(self, hou_node) -> None:
+        """Get all the files for the characters and create the nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        # Clear the previous characters nodes generated.
+        self.remove_characters_nodes(hou_node)
+
+        # Find the data to properly find the files.
+        sequence = self.get_parm_value(hou_node, "sequences")
+        shot = self.get_parm_value(hou_node, "shots")
+        version = self.get_parm_value(hou_node, "characterVersions")
+
+        # Get files to import.
+        export_directory = os.path.join("O:", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
+        files = [file for file in os.listdir(export_directory) if os.path.isfile(os.path.join(export_directory, file)) and ".abc" in file]
+
+        deformers = [file for file in files if "deformer" in file]
+
+        # Build objects.
+        assets_node = hou_node.node("ASSETS")
+        materials_node = assets_node.node("MTLX_DATABASE")
+        for character in deformers:
+            character_datas = character.split(".")[0]
+            character_name = character_datas.split("_")[3]
+            character_instance = f'{character_name}_{character_datas.split("_")[-1]}'
+
+            # Create the actual geometry node.
+            character_node = assets_node.createNode("geo", node_name=character_instance)
+            abc_node = character_node.createNode("alembic", node_name="IN_CACHES")
+            abc_node.parm("fileName").set(os.path.join(export_directory, character))
+
+            self.add_asset_category(character_node, category_name="Character")
+
+            # Create the materialx node and assign it.
+            path_to_shading = os.path.join("O:\\", "shows", "IZES", "assets", "Character", character_name, "publishs", "SHD")
+            last_version = [directory for directory in self.find_subdirectories(path_to_shading) if directory[0] == "v"][-1]
+            materialx_path = os.path.join(path_to_shading, last_version, "caches", f'SHD_{character_name}.{last_version}.mtlx')
+
+            material_node = materials_node.createNode("materialx", node_name=f'{character_instance}_mtlx')
+            material_node.parm("selection").set("*")
+            material_node.parm("filename").set(materialx_path)
+            material_node.parm("look").set("default")
+            character_node.parm("ar_operator_graph").set(character_node.relativePathTo(material_node))
+            
+
+    def remove_characters_nodes(self, hou_node) -> None:
+        pass
 
     def remove_assets(self, hou_node) -> None:
         """Function to remove all the assets generated on shot loading.
@@ -254,6 +311,31 @@ class ShotImporter:
             if(node.name() in self.processing_nodes): continue
             node.destroy()
     
+    def add_asset_category(self, hou_node, category_name=""):
+        """Add a spare parameter to the node and set the category name.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        if(not "assetCategory" in hou_node.parms()):
+            # Get the interface template group.
+            ptg = hou_node.parmTemplateGroup()
+
+            # Add category field.
+            ptg.addParmTemplate(
+                hou.StringParmTemplate (
+                    "assetCategory",
+                    "Category",
+                    1,
+                    is_hidden=True,
+                )
+            )
+
+            # Update the node interface.
+            hou_node.setParmTemplateGroup(ptg)
+
+        hou_node.parm("assetCategory").set(category_name)
+
     def update_menu_list(self, hou_node, menu_name, items, reset_index=False) -> None:
         """Update menu parameter list inside of the HDA interface.
         Args:
