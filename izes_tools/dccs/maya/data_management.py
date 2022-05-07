@@ -13,7 +13,9 @@ import maya.mel as mel
 
 from setDressTools import SetDressTools
 
-def export_setdressing(auto_output_path=True):
+def export_setdressing(auto_output_path=True, use_selection=True):
+    cmds.loadPlugin('AbcExport2')
+
     # Find the range of the shot.
     frame_range = (
         int(cmds.playbackOptions(query=True, animationStartTime=True)),
@@ -50,23 +52,31 @@ def export_setdressing(auto_output_path=True):
         shot = output_path.split("/")[5]
         version_number = int(output_path.split("/")[-1].replace("v", ""))
     
-    exporter = ShotExporter(output_path, frame_range, sequence, shot, version_number)
+    objects_filter = []
+    if(use_selection):
+        print('Using selection for the export.')
+        objects = [object.split("|")[1] for object in cmds.ls(sl=True, long=True) if len(object.split("|")) == 2]
+        print(f'Selected objects: {" - ".join(objects)}')
+
+    exporter = ShotExporter(output_path, frame_range, sequence, shot, version_number, objects_filter=objects)
 
 class ShotExporter:
-    def __init__(self, output_path, frame_range, sequence, shot, version_number)->None:
+    def __init__(self, output_path, frame_range, sequence, shot, version_number, objects_filter=[])->None:
         self.__output_path = output_path
         self.__frame_range = frame_range
         self.__sequence = sequence
         self.__shot = shot
         self.__version_number = version_number
 
+        self.__objects_filter = objects_filter
+
         # Export Characters.
         self.export_characters()
         
         # Process the background
-        self.__setdress_objects = find_objects_by_keyword_in_path("/assets/environment/")
-        self.__setdress_objects.extend(find_objects_by_keyword_in_path("/assets/Prop/"))
-        self.__setdress_objects.extend(find_objects_by_keyword_in_path("/assets/Props-Nature/"))
+        self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/environment/")
+        self.__setdress_objects.extend(self.find_objects_by_keyword_in_path("/assets/Prop/"))
+        self.__setdress_objects.extend(self.find_objects_by_keyword_in_path("/assets/Props-Nature/"))
         
         self.__processed_setdress_objects = self.process_objects()
 
@@ -79,6 +89,7 @@ class ShotExporter:
         print("Exporting static setdress assets.")
         static_objects = [object_data["name"] for object_data in self.__processed_setdress_objects if not object_data["animated"]]
         output_path = f'{self.__output_path}/set_dressing/ANM_{self.__sequence}_{self.__shot}_staticObjects.v{str(self.__version_number).zfill(3)}.abc'
+        self.create_output_directory(output_path)
         sdt = SetDressTools()
         sdt.export(1001, 1001, output_path, objects=static_objects)
         
@@ -139,7 +150,7 @@ class ShotExporter:
     def export_characters(self):
         # Export each elements.
         print("Exporting Characters: ")
-        self.export_deformed_to_disk(find_objects_by_keyword_in_path("/assets/Character/"))
+        self.export_deformed_to_disk(self.find_objects_by_keyword_in_path("/assets/Character/"))
 
     def export_deformed_to_disk(self, objects, set_dress=False):
         """Utility function to export on disk deformed assets.
@@ -156,12 +167,44 @@ class ShotExporter:
             else:
                 output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
             
-            if(os.path.isdir(os.path.dirname(output_path)) == False):
-                os.makedirs(os.path.dirname(output_path))
+            self.create_output_directory(output_path)
 
             command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa -root |{elem} -file {output_path}";'
             print(f"Exporting `{asset}`: {i+1}/{len(objects)}")
             mel.eval(command)
+    
+    def find_objects_by_keyword_in_path(self, keyword):
+        """Find every references with a keyword in their path.
+
+        Args:
+            keyword (str): Part to find in the path
+
+        Returns:
+            list: List of objects.
+        """
+        objects = []
+        
+        for ref in cmds.ls(references=True):
+            reference_path = cmds.referenceQuery(ref, filename=True)
+            
+            if(not keyword in reference_path):
+                continue
+            
+            nodes = cmds.referenceQuery(ref, nodes=True, showDagPath=True)
+            if(len(nodes) > 0):
+                if(self.__objects_filter != []):
+                    if(nodes[0] in self.__objects_filter):
+                        objects.append(nodes[0])
+                else:
+                    objects.append(nodes[0])
+        
+        return objects
+    
+    def create_output_directory(self, path):
+        if(os.path.isdir(os.path.dirname(path)) == False):
+                os.makedirs(os.path.dirname(path))
+        
+        return
 
 def export_character_animation():
     """Export selection to animation publish directory.
