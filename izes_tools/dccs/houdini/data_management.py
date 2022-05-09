@@ -76,6 +76,8 @@ class ShotImporter:
             "setDressExtendVersions",
             "Extended Props",
             ["-----[Select]-----"],
+            script_callback="hou.phm().importer.create_props_nodes(kwargs['node'])",
+            script_callback_language=hou.scriptLanguage.Python,
         ))
         
         # Add animated version parameter.
@@ -196,6 +198,9 @@ class ShotImporter:
         # Import characters.
         self.create_characters_nodes(hou_node)
 
+        # import props.
+        self.create_props_nodes(hou_node)
+
     def create_characters_nodes(self, hou_node) -> None:
         """Get all the files for the characters and create the nodes.
 
@@ -251,6 +256,85 @@ class ShotImporter:
             hou_node (class: `hou.Node`): The node to edit.
         """
         self.remove_nodes_from_category(hou_node, category_name="Character")
+
+    def create_props_nodes(self, hou_node) -> None:
+        """Get all the files for the props and create the nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        # Clear the previous props nodes generated.
+        self.remove_props_nodes(hou_node)
+
+        # Find the data to properly find the files.
+        sequence = self.get_parm_value(hou_node, "sequences")
+        shot = self.get_parm_value(hou_node, "shots")
+        version = self.get_parm_value(hou_node, "characterVersions")
+
+        # Get files to import.
+        export_directory = os.path.join("O:", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
+        files = [file for file in self.recursive_file_search(export_directory)
+            if "set_dressing" in file and not "deformer" in file and not "staticObjects" in file and ".abc" in file
+        ]
+
+        # Build objects.
+        assets_node = hou_node.node("ASSETS")
+        materials_node = assets_node.node("MTLX_DATABASE")
+        for prop_file in files:
+            # Getter prop datas (Name, Type...).
+            prop = os.path.basename(prop_file)
+            parent_setdress = "_".join(os.path.dirname(prop_file).split(os.sep)[-1].split("_")[:-1]) \
+                if os.path.dirname(prop_file).split(os.sep)[-1] != "set_dressing" else ""
+
+            prop_datas = prop.split(".")[0]
+
+            prop_name = []
+            prop_name.extend(prop_datas.split("_"))
+            del prop_name[0:3]
+            del prop_name[-1]
+            prop_name = "_".join(prop_name)
+
+            prop_type = self.get_asset_type(prop_name)
+
+            prop_instance = f'{prop_name}_{prop_datas.split("_")[-1]}'
+            prop_node = assets_node.createNode("propsDeformer", node_name=prop_instance)
+            
+            # Setup the deformer node.
+            prop_node.parm("assetType").set(prop_type)
+            prop_node.parm("assetName").set(prop_name)
+            prop_node.parm("version").set(self.get_last_publish_version(prop_name, "MDL"))
+            prop_node.parm("deformedCache").set(prop_file)
+
+            if(not os.path.isfile(prop_node.node("save_cache").parm("filename").evalAsString())):
+                # Compute the ABC only when not present on disk.
+                prop_node.node("save_cache").parm("execute").pressButton()
+
+            self.add_asset_category(prop_node, category_name="Prop")
+
+            # Setup the material.
+            if(parent_setdress != ""):
+                path_to_shading = os.path.join("O:\\", "shows", "IZES", "assets", "environment", parent_setdress, "publishs", "SHD")
+                last_version = [directory for directory in self.find_subdirectories(path_to_shading) if directory[0] == "v"]
+
+                if(len(last_version) >= 1):
+                    last_version = last_version[-1]
+                    materialx_path = os.path.join(path_to_shading, last_version, f'{prop_instance}.mtlx')
+
+                    material_node = materials_node.createNode("materialx", node_name=f'{prop_instance}_mtlx')
+                    material_node.parm("selection").set("*")
+                    material_node.parm("filename").set(materialx_path)
+                    material_node.parm("look").set("default")
+                    prop_node.parm("ar_operator_graph").set(prop_node.relativePathTo(material_node))
+
+                    self.add_asset_category(material_node, category_name="Prop")
+
+    def remove_props_nodes(self, hou_node) -> None:
+        """Remove all the props generated nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        self.remove_nodes_from_category(hou_node, category_name="Prop")
 
     def remove_assets(self, hou_node) -> None:
         """Function to remove all the assets generated on shot loading.
@@ -380,6 +464,52 @@ class ShotImporter:
         """
         return [parm.name() for parm in hou_node.parms()]
 
+    def get_asset_type(self, name):
+        """Get the type of an asset from his name.
+
+        Args:
+            name (str): Name fo the asset.
+
+        Returns:
+            str: Type of the asset.
+        """
+        for types_folder in self.find_subdirectories("O:\\shows\\IZES\\assets"):
+            for asset_folder in  self.find_subdirectories(os.path.join("O:\\shows\\IZES\\assets", types_folder)):
+                if(asset_folder == name):
+                    return types_folder
+        
+        return None
+
+    def get_last_publish_version(self, name, task_type):
+        """Functio to get the last publish version for a given task.
+
+        Args:
+            name (str): Name fo the asset.
+
+        Returns:
+            int: Version number.
+        """
+        version = 1
+
+        cache_directory = os.path.join(
+            "O:\\",
+            "shows",
+            "IZES",
+            "assets",
+            self.get_asset_type(name),
+            name,
+            "publishs",
+            task_type
+        )
+
+        last_version_dir = [folder for folder in os.listdir(cache_directory)
+            if os.path.isdir(os.path.join(cache_directory, folder)) and folder[0] == "v"
+        ]
+
+        if(len(last_version_dir) != 0): version = int(last_version_dir[-1][1:])
+
+        return version
+
     def find_subdirectories(self, path) -> str:
         """Get the name of the folders for the given path.
 
@@ -390,3 +520,24 @@ class ShotImporter:
             list: `str`: Name of the directories.
         """
         return [folder for folder in os.listdir(path) if os.path.isdir(os.path.join(path, folder)) and folder[0] != "_"]
+    
+    def recursive_file_search(self, path):
+        """Find all the files in a directory and it's subdirectories.
+
+        Args:
+            path (str): Path to a directory.
+
+        Returns:
+            list: `str`: File's paths.
+        """
+        files = []
+
+        for item in os.listdir(path):
+            item_path = os.path.join(path, item)
+            if(os.path.isfile(item_path)):
+                files.append(item_path)
+                continue
+
+            files.extend(self.recursive_file_search(item_path))
+
+        return files
