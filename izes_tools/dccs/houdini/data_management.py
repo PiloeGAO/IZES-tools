@@ -52,25 +52,6 @@ class ShotImporter:
             script_callback_language=hou.scriptLanguage.Python,
         ))
 
-        # Add environment parameter.
-        environment = ["-----[Select]-----"]
-        environment.extend(self.find_subdirectories("O:/shows/IZES/assets/environment"))
-        production_settings_folder.addParmTemplate(hou.MenuParmTemplate(
-            "environment",
-            "Environment",
-            environment,
-            script_callback="hou.phm().importer.update_environment_versions_menu(kwargs['node'])",
-            script_callback_language=hou.scriptLanguage.Python,
-            join_with_next=True,
-        ))
-
-        # Add environmentVersions parameter.
-        production_settings_folder.addParmTemplate(hou.MenuParmTemplate(
-            "environmentVersions",
-            "Shading Version",
-            ["-----[Select]-----"],
-        ))
-
         # Add production_settings_folder to template group.
         ptg.addParmTemplate(production_settings_folder)
 
@@ -92,15 +73,15 @@ class ShotImporter:
         
         # Add animated version parameter.
         versions_settings_folder.addParmTemplate(hou.MenuParmTemplate(
-            "setDressAnimatedVersions",
-            "Animated SetDress",
+            "setDressExtendVersions",
+            "Extended Props",
             ["-----[Select]-----"],
         ))
         
         # Add animated version parameter.
         versions_settings_folder.addParmTemplate(hou.MenuParmTemplate(
-            "setDressStaticVersions",
-            "Static SetDress",
+            "setDressVersions",
+            "SetDress",
             ["-----[Select]-----"],
         ))
 
@@ -159,26 +140,9 @@ class ShotImporter:
         versions = [version for version in versions if version[0] == "v"]
         versions.reverse()
 
-        for version_name in ["characterVersions", "setDressAnimatedVersions", "setDressStaticVersions"]:
+        for version_name in ["characterVersions", "setDressExtendVersions", "setDressVersions"]:
             self.update_menu_list(hou_node, version_name, versions, reset_index=True)
             if(len(versions) > 0): hou_node.parm(version_name).set(1)
-
-    def update_environment_versions_menu(self, hou_node) -> None:
-        """Update the content of the environment shading versions dropdown.
-
-        Args:
-            hou_node (class: `hou.Node`): The node to edit.
-        """
-        environment = self.get_parm_value(hou_node, "environment")
-
-        if(environment is "-----[Select]-----"): return
-        
-        versions = self.find_subdirectories(os.path.join("O:", "shows", "IZES", "assets", "environment", environment, "publishs", "SHD"))
-        versions = [version for version in versions if version[0] == "v"]
-        versions.reverse()
-
-        self.update_menu_list(hou_node, "environmentVersions", versions, reset_index=True)
-        if(len(versions) > 0): hou_node.parm("environmentVersions").set(1)
 
     def clear_ui(self, hou_node) -> None:
         """Delete all the spare parameters on the node.
@@ -209,21 +173,16 @@ class ShotImporter:
         sequence = self.get_parm_value(hou_node, "sequences")
         shot = self.get_parm_value(hou_node, "shots")
 
-        environment = self.get_parm_value(hou_node, "environment")
-        environment_shading_version = self.get_parm_value(hou_node, "environmentVersions")
-
         characters_version = self.get_parm_value(hou_node, "characterVersions")
-        animated_setdress_version = self.get_parm_value(hou_node, "setDressAnimatedVersions")
-        static_setdress_version = self.get_parm_value(hou_node, "setDressStaticVersions")
+        props_version = self.get_parm_value(hou_node, "setDressExtendVersions")
+        setdress_version = self.get_parm_value(hou_node, "setDressVersions")
 
         all_settings = (
             sequence,
             shot,
-            environment,
-            environment_shading_version,
             characters_version,
-            animated_setdress_version,
-            static_setdress_version
+            props_version,
+            setdress_version
         )
 
         if("-----[Select]-----" in all_settings):
@@ -282,10 +241,16 @@ class ShotImporter:
             material_node.parm("filename").set(materialx_path)
             material_node.parm("look").set("default")
             character_node.parm("ar_operator_graph").set(character_node.relativePathTo(material_node))
-            
+
+            self.add_asset_category(material_node, category_name="Character")
 
     def remove_characters_nodes(self, hou_node) -> None:
-        pass
+        """Remove all the character generated nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        self.remove_nodes_from_category(hou_node, category_name="Character")
 
     def remove_assets(self, hou_node) -> None:
         """Function to remove all the assets generated on shot loading.
@@ -311,13 +276,14 @@ class ShotImporter:
             if(node.name() in self.processing_nodes): continue
             node.destroy()
     
-    def add_asset_category(self, hou_node, category_name=""):
+    def add_asset_category(self, hou_node, category_name="") -> None:
         """Add a spare parameter to the node and set the category name.
 
         Args:
             hou_node (class: `hou.Node`): The node to edit.
+            category_name (str, optional): Name of the category tag to create. Defaults to "".
         """
-        if(not "assetCategory" in hou_node.parms()):
+        if(not "assetCategory" in self.get_parm_names(hou_node)):
             # Get the interface template group.
             ptg = hou_node.parmTemplateGroup()
 
@@ -335,6 +301,21 @@ class ShotImporter:
             hou_node.setParmTemplateGroup(ptg)
 
         hou_node.parm("assetCategory").set(category_name)
+
+    def remove_nodes_from_category(self, hou_node, category_name=""):
+        """Remove all the nodes with the given category tag.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+            category_name (str, optional): Name of the category tag to find. Defaults to "".
+        """
+        for node in hou_node.children():
+            if("assetCategory" in self.get_parm_names(node)):
+                if(node.parm("assetCategory").evalAsString() == category_name):
+                    node.destroy()
+                    continue
+
+            self.remove_nodes_from_category(node, category_name=category_name)
 
     def update_menu_list(self, hou_node, menu_name, items, reset_index=False) -> None:
         """Update menu parameter list inside of the HDA interface.
@@ -372,16 +353,32 @@ class ShotImporter:
 
     def get_parm_value(self, hou_node, parm_name) -> str:
         """ Update the selected sequence.
+
         Args:
-            hou_node (`class` : hou.Node): HDA node.
+            hou_node (class: `hou.Node`): The node to edit.
             parm_name (str) : Name of the parameter.
         Returns:
             str: Value of the parameter.
         """
+        if(not parm_name in self.get_parm_names(hou_node)):
+            raise RuntimeError(f'Parameter "{parm_name}" don\'t exist on "{hou_node}"')
+            return None
+
         value = hou_node.parm(parm_name).evalAsString()
         
         if("[select]" in value): return None
         return value
+
+    def get_parm_names(self, hou_node) -> list:
+        """Return a list of parm names for the node. 
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+
+        Returns:
+            list: List of parm name.
+        """
+        return [parm.name() for parm in hou_node.parms()]
 
     def find_subdirectories(self, path) -> str:
         """Get the name of the folders for the given path.
