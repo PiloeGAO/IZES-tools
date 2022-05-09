@@ -80,18 +80,32 @@ class ShotExporter:
         
         self.__processed_setdress_objects = self.process_objects()
 
-        # Exporting animated objects.
-        print("Exporting animated setdress assets.")
-        animated_objects = [object_data["name"] for object_data in self.__processed_setdress_objects if object_data["animated"]]
-        self.export_deformed_to_disk(animated_objects, set_dress=True)
+        full_animated_objects = [object_data["name"] for object_data in self.__processed_setdress_objects if object_data["animated"]]
+        full_static_objects = [object_data["name"] for object_data in self.__processed_setdress_objects if not object_data["animated"]]
 
-        # Exporting static objects.
-        print("Exporting static setdress assets.")
-        static_objects = [object_data["name"] for object_data in self.__processed_setdress_objects if not object_data["animated"]]
-        output_path = f'{self.__output_path}/set_dressing/ANM_{self.__sequence}_{self.__shot}_staticObjects.v{str(self.__version_number).zfill(3)}.abc'
-        self.create_output_directory(output_path)
-        sdt = SetDressTools()
-        sdt.export(1001, 1001, output_path, objects=static_objects)
+        full_objects = []
+        full_objects.extend(full_animated_objects)
+        full_objects.extend(full_static_objects)
+
+        set_dress_names = set([object.split(":")[0] for object in full_objects if object.count(":") > 1])
+
+        for set_dress_name in set_dress_names:
+            # Exporting animated objects.
+            print(f"Exporting animated setdress assets for {set_dress_name}.")
+            animated_objects = [object for object in full_animated_objects if set_dress_name in object]
+            self.export_deformed_to_disk(animated_objects, set_dress=True, set_dress_name=set_dress_name)
+
+            # Exporting static objects.
+            print(f"Exporting static setdress assets for {set_dress_name}.")
+            static_objects = [object for object in full_static_objects if set_dress_name in object]
+            output_path = f'{self.__output_path}/set_dressing/{set_dress_name}/ANM_{self.__sequence}_{self.__shot}_staticObjects.v{str(self.__version_number).zfill(3)}.abc'
+            self.create_output_directory(output_path)
+            sdt = SetDressTools()
+            sdt.export(1001, 1001, output_path, objects=static_objects)
+        
+        print(f"Exporting animated objects not in  the set dress.")
+        extend_pieces = [object for object in full_objects if object.split(":")[0] not in set_dress_names]
+        self.export_deformed_to_disk(extend_pieces, set_dress=True, set_dress_name="")
         
 
     def process_objects(self):
@@ -152,7 +166,7 @@ class ShotExporter:
         print("Exporting Characters: ")
         self.export_deformed_to_disk(self.find_objects_by_keyword_in_path("/assets/Character/"))
 
-    def export_deformed_to_disk(self, objects, set_dress=False):
+    def export_deformed_to_disk(self, objects, set_dress=False, set_dress_name=""):
         """Utility function to export on disk deformed assets.
 
         Args:
@@ -163,7 +177,10 @@ class ShotExporter:
             instance = elem.split(":")[0].split("_")[-1]
 
             if(set_dress):
-                output_path = f'{self.__output_path}/set_dressing/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
+                if(set_dress_name == ""):
+                    output_path = f'{self.__output_path}/set_dressing/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
+                else:
+                    output_path = f'{self.__output_path}/set_dressing/{set_dress_name}/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
             else:
                 output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
             
