@@ -85,6 +85,8 @@ class ShotImporter:
             "setDressVersions",
             "SetDress",
             ["-----[Select]-----"],
+            script_callback="hou.phm().importer.create_setdress_nodes(kwargs['node'])",
+            script_callback_language=hou.scriptLanguage.Python,
         ))
 
         # Add versions_settings_folder to template group.
@@ -198,8 +200,11 @@ class ShotImporter:
         # Import characters.
         self.create_characters_nodes(hou_node)
 
-        # import props.
+        # Import props.
         self.create_props_nodes(hou_node)
+
+        # Import setdressing (static objects).
+        self.create_setdress_nodes(hou_node)
 
     def create_characters_nodes(self, hou_node) -> None:
         """Get all the files for the characters and create the nodes.
@@ -269,12 +274,12 @@ class ShotImporter:
         # Find the data to properly find the files.
         sequence = self.get_parm_value(hou_node, "sequences")
         shot = self.get_parm_value(hou_node, "shots")
-        version = self.get_parm_value(hou_node, "characterVersions")
+        version = self.get_parm_value(hou_node, "setDressExtendVersions")
 
         # Get files to import.
-        export_directory = os.path.join("O:", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
+        export_directory = os.path.join("O:\\", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches", "set_dressing")
         files = [file for file in self.recursive_file_search(export_directory)
-            if "set_dressing" in file and not "deformer" in file and not "staticObjects" in file and ".abc" in file
+            if not "deformer" in file and not "staticObjects" in file and ".abc" in file
         ]
 
         # Build objects.
@@ -335,6 +340,42 @@ class ShotImporter:
             hou_node (class: `hou.Node`): The node to edit.
         """
         self.remove_nodes_from_category(hou_node, category_name="Prop")
+
+    def create_setdress_nodes(self, hou_node) -> None:
+        """Get all the files for the setdressing and create the nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        # Clear the previous props nodes generated.
+        self.remove_setdress_nodes(hou_node)
+
+        # Find the data to properly find the files.
+        sequence = self.get_parm_value(hou_node, "sequences")
+        shot = self.get_parm_value(hou_node, "shots")
+        version = self.get_parm_value(hou_node, "setDressVersions")
+
+        # Get files to import.
+        export_directory = os.path.join("O:\\", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches", "set_dressing")
+
+        # Build objects.
+        assets_node = hou_node.node("ASSETS")
+        materials_node = assets_node.node("MTLX_DATABASE")
+
+        for set_dress in self.find_subdirectories(export_directory):
+            static_file = os.path.join(export_directory, set_dress, f'ANM_{sequence}_{shot}_staticObjects.{version}.abc')
+            
+            set_dress_node = assets_node.createNode("setDressing", node_name=set_dress)
+            set_dress_node.parm("cacheFile").set(static_file)
+            set_dress_node.parm("importButton").pressButton()
+            
+    def remove_setdress_nodes(self, hou_node) -> None:
+        """Remove all the setdressing generated nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        self.remove_nodes_from_category(hou_node, category_name="SetDressing")
 
     def remove_assets(self, hou_node) -> None:
         """Function to remove all the assets generated on shot loading.
