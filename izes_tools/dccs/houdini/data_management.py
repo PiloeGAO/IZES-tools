@@ -363,11 +363,34 @@ class ShotImporter:
         materials_node = assets_node.node("MTLX_DATABASE")
 
         for set_dress in self.find_subdirectories(export_directory):
+            set_dress_name = "_".join(set_dress.split("_")[:-1])
             static_file = os.path.join(export_directory, set_dress, f'ANM_{sequence}_{shot}_staticObjects.{version}.abc')
             
             set_dress_node = assets_node.createNode("setDressing", node_name=set_dress)
             set_dress_node.parm("cacheFile").set(static_file)
             set_dress_node.parm("importButton").pressButton()
+
+            self.add_asset_category(set_dress_node, category_name="SetDressing")
+
+            # Managing materialx import.
+            path_to_shading = os.path.join("O:\\", "shows", "IZES", "assets", "environment", set_dress_name, "publishs", "SHD")
+            last_version = [directory for directory in self.find_subdirectories(path_to_shading) if directory[0] == "v"]
+
+            if(len(last_version) >= 1):
+                last_version = last_version[-1]
+
+                for asset_node in set_dress_node.node("ASSETS").children():
+                    assets_name = asset_node.name()
+
+                    materialx_path = os.path.join(path_to_shading, last_version, f'{assets_name}.mtlx')
+
+                    material_node = materials_node.createNode("materialx", node_name=f'{assets_name}_mtlx')
+                    material_node.parm("selection").set("*")
+                    material_node.parm("filename").set(materialx_path)
+                    material_node.parm("look").set("default")
+                    asset_node.parm("ar_operator_graph").set(asset_node.relativePathTo(material_node))
+
+                    self.add_asset_category(material_node, category_name="SetDressing")
             
     def remove_setdress_nodes(self, hou_node) -> None:
         """Remove all the setdressing generated nodes.
