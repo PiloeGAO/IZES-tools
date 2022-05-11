@@ -38,7 +38,7 @@ def create_shelf():
    # Asset Tools.
    cmds.shelfButton(
       label='Build Asset Structure',
-      command='from izes_tools.dccs.maya.shelf_commands import createAssetStructure; createAssetStructure()',
+      command='from izes_tools.dccs.maya.asset_tools import createAssetStructure; createAssetStructure()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "BuildAssetStructure2.png"),
@@ -47,7 +47,7 @@ def create_shelf():
    
    cmds.shelfButton(
       label='Build Props Rig',
-      command='from izes_tools.dccs.maya.shelf_commands import create_props_rig; create_props_rig()',
+      command='from izes_tools.dccs.maya.asset_tools import create_props_rig; create_props_rig()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "AutoBonesGen6.png"),
@@ -56,7 +56,7 @@ def create_shelf():
    
    cmds.shelfButton(
       label='Upgrade SetDressing to Rigs',
-      command='from izes_tools.dccs.maya.shelf_commands import upgrade_setdressing; upgrade_setdressing()',
+      command='from izes_tools.dccs.maya.asset_tools import upgrade_setdressing; upgrade_setdressing()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "Convert3.png"),
@@ -65,7 +65,7 @@ def create_shelf():
    
    cmds.shelfButton(
       label='Rename namespaces for assets',
-      command='from izes_tools.dccs.maya.shelf_commands import rename_assets; rename_assets()',
+      command='from izes_tools.dccs.maya.asset_tools import rename_assets; rename_assets()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "RenameAssets6.png"),
@@ -77,7 +77,7 @@ def create_shelf():
    # Animation Tools.
    cmds.shelfButton(
       label='Setup Shot',
-      command='from izes_tools.dccs.maya.shelf_commands import setupShot; setupShot()',
+      command='from izes_tools.dccs.maya.animation_tools import setupShot; setupShot()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "ShotSetup4.png"),
@@ -86,7 +86,7 @@ def create_shelf():
 
    cmds.shelfButton(
       label='Attach Backpack to Joy',
-      command='from izes_tools.dccs.maya.shelf_commands import attach_backpack_to_joy; attach_backpack_to_joy()',
+      command='from izes_tools.dccs.maya.animation_tools import attach_backpack_to_joy; attach_backpack_to_joy()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "AttachBackpackToJoy5.png"),
@@ -102,12 +102,33 @@ def create_shelf():
          image=os.path.join(current_dir, "icons", "studiolib_icon.png"),
          style='iconOnly'
       )
-   
+
+   cmds.separator(width=12,height=35, style=shelfStyle, hr=False)
+
+   # Data Management Tools.
    cmds.shelfButton(
       label='Export Selection To Publish',
-      command='from izes_tools.dccs.maya.shelf_commands import export_animation; export_animation()',
+      command='from izes_tools.dccs.maya.data_management import export_character_animation; export_character_animation()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
+      style='iconOnly'
+   )
+
+   cmds.shelfButton(
+      label='Export Set Dressing To Publish',
+      command='from izes_tools.dccs.maya.data_management import export_setdressing; export_setdressing()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
+      style='iconOnly'
+   )
+
+   cmds.shelfButton(
+      label='Pack Scene',
+      command='from izes_tools.dccs.maya.data_management import pack_scene; pack_scene()',
+      sourceType='python',
+      annotation='',
+      image=os.path.join(current_dir, "icons", "ShotSetup4.png"),
       style='iconOnly'
    )
