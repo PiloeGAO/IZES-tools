@@ -53,12 +53,11 @@ def export_setdressing(auto_output_path=True, use_selection=True):
         version_number = int(output_path.split("/")[-1].replace("v", ""))
     
     objects_filter = []
-    if(use_selection):
-        print('Using selection for the export.')
-        objects = [object.split("|")[1] for object in cmds.ls(sl=True, long=True) if len(object.split("|")) == 2]
-        print(f'Selected objects: {" - ".join(objects)}')
+    if(use_selection and len(cmds.ls(sl=True)) > 0):
+        objects_filter = [object.split("|")[1] for object in cmds.ls(sl=True, long=True) if len(object.split("|")) == 2]
+        print(f'Selected objects: {" - ".join(objects_filter)}')
 
-    exporter = ShotExporter(output_path, frame_range, sequence, shot, version_number, objects_filter=objects)
+    exporter = ShotExporter(output_path, frame_range, sequence, shot, version_number, objects_filter=objects_filter)
 
 class ShotExporter:
     def __init__(self, output_path, frame_range, sequence, shot, version_number, objects_filter=[])->None:
@@ -75,6 +74,7 @@ class ShotExporter:
         
         # Process the background
         self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/environment/")
+        self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/Environment/")
         self.__setdress_objects.extend(self.find_objects_by_keyword_in_path("/assets/Prop/"))
         self.__setdress_objects.extend(self.find_objects_by_keyword_in_path("/assets/Props-Nature/"))
         
@@ -125,7 +125,7 @@ class ShotExporter:
                 "obj_namespace" : obj_namespace,
                 "animated": False
             }
-            
+
             if(not cmds.objExists(f'{obj_namespace}:main_SRT_local')
             or not cmds.objExists(f'{obj_namespace}:main_SRT_global')):
                 print(f'Invalid rig for: {obj_namespace}')
