@@ -72,6 +72,9 @@ class ShotExporter:
         # Export Characters.
         self.export_characters()
 
+        # Export Cameras.
+        self.export_cameras()
+
         # Process the background
         self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/environment/")
         self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/Environment/")
@@ -162,7 +165,8 @@ class ShotExporter:
         return obj_datas
     
     def export_characters(self):
-        # Export each elements.
+        """Export every characters of the scene.
+        """
         print("Exporting Characters: ")
 
         objects = self.find_objects_by_keyword_in_path("/assets/Character/")
@@ -187,6 +191,22 @@ class ShotExporter:
 
             command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {roots} -file {output_path}";'
             print(f"Exporting `{asset}`: {i+1}/{len(objects)}")
+            mel.eval(command)
+
+    def export_cameras(self):
+        """Export every cameras of the scene.
+        """
+        camera_rigs = self.find_objects_by_keyword_in_path("/assets/Camera/")
+        
+        for i, rig in enumerate(camera_rigs):
+            namespace = rig.split(":")[0]
+
+            output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{namespace}.v{str(self.__version_number).zfill(3)}.abc'
+
+            to_export_camera = f"-root {namespace}:main_persp"
+
+            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {to_export_camera} -file {output_path}";'
+            print(f"Exporting `{rig}`: {i+1}/{len(camera_rigs)}")
             mel.eval(command)
 
     def export_deformed_to_disk(self, objects, set_dress=False, set_dress_name=""):
