@@ -108,7 +108,7 @@ def create_shelf():
    # Data Management Tools.
    cmds.shelfButton(
       label='Export Selection To Publish',
-      command='from izes_tools.dccs.maya.data_management import export_character_animation; export_character_animation()',
+      command='from izes_tools.dccs.maya.data_management import export_character_animation2; export_character_animation2()',
       sourceType='python',
       annotation='',
       image=os.path.join(current_dir, "icons", "ExportToAnimation7.png"),
