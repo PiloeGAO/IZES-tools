@@ -71,7 +71,10 @@ class ShotExporter:
 
         # Export Characters.
         self.export_characters()
-        
+
+        # Export Cameras.
+        self.export_cameras()
+
         # Process the background
         self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/environment/")
         self.__setdress_objects = self.find_objects_by_keyword_in_path("/assets/Environment/")
@@ -162,9 +165,49 @@ class ShotExporter:
         return obj_datas
     
     def export_characters(self):
-        # Export each elements.
+        """Export every characters of the scene.
+        """
         print("Exporting Characters: ")
-        self.export_deformed_to_disk(self.find_objects_by_keyword_in_path("/assets/Character/"))
+
+        objects = self.find_objects_by_keyword_in_path("/assets/Character/")
+
+        for i, character in enumerate(objects):
+            asset = character.split(":")[character.count(":")-1]
+            instance = character.split(":")[0].split("_")[-1]
+
+            output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
+            
+            self.create_output_directory(output_path)
+
+            all_objs = cmds.listRelatives(character, allDescendents=True, fullPath=True, path=True, type="shape")
+            to_export_objs = [
+                obj.replace(f"|{obj.split('|')[-1]}", "") for obj in all_objs
+                if not "rig_GRP" in obj
+                and not "bones_GRP" in obj
+                and not "blendShapes" in obj
+            ]
+
+            roots = "-root " + " -root ".join(to_export_objs)
+
+            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {roots} -file {output_path}";'
+            print(f"Exporting `{asset}`: {i+1}/{len(objects)}")
+            mel.eval(command)
+
+    def export_cameras(self):
+        """Export every cameras of the scene.
+        """
+        camera_rigs = self.find_objects_by_keyword_in_path("/assets/Camera/")
+        
+        for i, rig in enumerate(camera_rigs):
+            namespace = rig.split(":")[0]
+
+            output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{namespace}.v{str(self.__version_number).zfill(3)}.abc'
+
+            to_export_camera = f"-root {namespace}:main_persp"
+
+            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {to_export_camera} -file {output_path}";'
+            print(f"Exporting `{rig}`: {i+1}/{len(camera_rigs)}")
+            mel.eval(command)
 
     def export_deformed_to_disk(self, objects, set_dress=False, set_dress_name=""):
         """Utility function to export on disk deformed assets.
@@ -276,6 +319,76 @@ def export_character_animation():
         # Export ABC
         output_path = output_path.replace("\\", "/")
         command = f'AbcExport2 -j "-frameRange {in_frame} {out_frame} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa -root |{elem} -file {output_path}";'
+        # print(command)
+        print(f"Exporting {asset} > {i+1}/{len(cmds.ls(sl=True))}")
+        mel.eval(command)
+
+    print("Export DONE")
+
+def export_character_animation2():
+    """Export selection to animation publish directory.
+    """
+    # Ask for Version.
+    version = cmds.promptDialog(
+        title='Export Animation',
+        message='Enter Version:',
+        button=['OK', 'Cancel'],
+        defaultButton='OK',
+        cancelButton='Cancel',
+        dismissString='Cancel'
+    )
+
+    if version != 'OK':
+        print("Export aborded.")
+        return
+
+    version_number = str(cmds.promptDialog(query=True, text=True))
+
+    # Get shot datas from path.
+    scene_path = cmds.file(q=True, sn=True)
+    sequence = scene_path.split("/")[4]
+    shot = scene_path.split("/")[5]
+
+    in_frame = int(cmds.playbackOptions(query=True, animationStartTime=True))
+    out_frame = int(cmds.playbackOptions(query=True, animationEndTime=True))
+
+    # Export each elements.
+    for i, elem in enumerate(cmds.ls(sl=True)):
+        asset = elem.split(":")[0]
+        instance = elem.split(":")[0].split("_")[-1]
+        
+        output_path = os.path.join(
+            "O:\\shows",
+            "IZES",
+            "sequences",
+            sequence,
+            shot,
+            "publishs",
+            "ANM",
+            f"v{version_number.zfill(3)}",
+            "caches",
+            f"ANM_{sequence}_{shot}_{asset}.v{version_number.zfill(3)}.abc"    
+        )
+        
+        output_dir = os.path.dirname(output_path)
+        
+        if(os.path.isdir(output_dir) == False):
+            os.makedirs(output_dir)
+        
+        # Export ABC
+        output_path = output_path.replace("\\", "/")
+
+        all_objs = cmds.listRelatives(elem, allDescendents=True, fullPath=True, path=True, type="shape")
+        to_export_objs = [
+            obj.replace(f"|{obj.split('|')[-1]}", "") for obj in all_objs
+            if not "rig_GRP" in obj
+            and not "bones_GRP" in obj
+            and not "blendShapes" in obj
+        ]
+
+        roots = "-root " + " -root ".join(to_export_objs)
+
+        command = f'AbcExport2 -j "-frameRange {in_frame} {out_frame} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {roots} -file {output_path}";'
         # print(command)
         print(f"Exporting {asset} > {i+1}/{len(cmds.ls(sl=True))}")
         mel.eval(command)
