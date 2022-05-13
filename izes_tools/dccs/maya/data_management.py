@@ -180,7 +180,7 @@ class ShotExporter:
 
             all_objs = cmds.listRelatives(character, allDescendents=True, fullPath=True, path=True, type="shape")
             to_export_objs = [
-                obj.replace(f"|{obj.split('|')[-1]}", "") for obj in all_objs
+                f"{'|'.join(obj.split('|')[:-1])}" for obj in all_objs
                 if not "rig_GRP" in obj
                 and not "bones_GRP" in obj
                 and not "blendShapes" in obj
