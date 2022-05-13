@@ -176,7 +176,6 @@ class ShotExporter:
             instance = character.split(":")[0].split("_")[-1]
 
             output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{asset}.v{str(self.__version_number).zfill(3)}.abc'
-            
             self.create_output_directory(output_path)
 
             all_objs = cmds.listRelatives(character, allDescendents=True, fullPath=True, path=True, type="shape")
@@ -202,10 +201,11 @@ class ShotExporter:
             namespace = rig.split(":")[0]
 
             output_path = f'{self.__output_path}/ANM_{self.__sequence}_{self.__shot}_{namespace}.v{str(self.__version_number).zfill(3)}.abc'
+            self.create_output_directory(output_path)
 
             to_export_camera = f"-root {namespace}:main_persp"
 
-            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {to_export_camera} -file {output_path}";'
+            command = f'AbcExport -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {to_export_camera} -file {output_path}";'
             print(f"Exporting `{rig}`: {i+1}/{len(camera_rigs)}")
             mel.eval(command)
 
@@ -262,7 +262,7 @@ class ShotExporter:
     
     def create_output_directory(self, path):
         if(os.path.isdir(os.path.dirname(path)) == False):
-                os.makedirs(os.path.dirname(path))
+            os.makedirs(os.path.dirname(path))
         
         return
 
