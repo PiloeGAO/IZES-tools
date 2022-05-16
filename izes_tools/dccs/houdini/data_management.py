@@ -89,6 +89,16 @@ class ShotImporter:
             script_callback_language=hou.scriptLanguage.Python,
         ))
 
+        # Add refresh versions button.
+        versions_settings_folder.addParmTemplate(
+            hou.ButtonParmTemplate(
+                "updateVersions",
+                "Update Versions",
+                script_callback="hou.phm().importer.update_versions_menu(kwargs['node'])",
+                script_callback_language=hou.scriptLanguage.Python
+            )
+        )
+
         # Add versions_settings_folder to template group.
         ptg.addParmTemplate(versions_settings_folder)
 
@@ -583,6 +593,7 @@ class ShotImporter:
         Returns:
             list: `str`: Name of the directories.
         """
+        if(not os.path.isdir(path)): return []
         return [folder for folder in os.listdir(path) if os.path.isdir(os.path.join(path, folder)) and folder[0] != "_"]
     
     def recursive_file_search(self, path):
@@ -594,8 +605,9 @@ class ShotImporter:
         Returns:
             list: `str`: File's paths.
         """
-        files = []
+        if(not os.path.isdir(path)): return []
 
+        files = []
         for item in os.listdir(path):
             item_path = os.path.join(path, item)
             if(os.path.isfile(item_path)):
