@@ -188,7 +188,7 @@ class ShotExporter:
 
             roots = "-root " + " -root ".join(to_export_objs)
 
-            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -worldSpace -dataFormat ogawa {roots} -file {output_path}";'
+            command = f'AbcExport2 -j "-frameRange {self.__frame_range[0]} {self.__frame_range[1]} -stripNamespaces -uvWrite -dataFormat ogawa {roots} -file {output_path}";'
             print(f"Exporting `{asset}`: {i+1}/{len(objects)}")
             mel.eval(command)
 
