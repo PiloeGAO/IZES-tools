@@ -251,6 +251,8 @@ class ShotExporter:
                 continue
             
             nodes = cmds.referenceQuery(ref, nodes=True, showDagPath=True)
+            if(nodes == None): continue # Needed when a ref is unloaded.
+
             if(len(nodes) > 0):
                 if(self.__objects_filter != []):
                     if(nodes[0] in self.__objects_filter):
