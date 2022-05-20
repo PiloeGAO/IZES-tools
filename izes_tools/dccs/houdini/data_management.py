@@ -231,7 +231,7 @@ class ShotImporter:
         version = self.get_parm_value(hou_node, "characterVersions")
 
         # Get files to import.
-        export_directory = os.path.join("O:", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
+        export_directory = os.path.join("O:\\", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
         files = [file for file in os.listdir(export_directory) if os.path.isfile(os.path.join(export_directory, file)) and ".abc" in file]
 
         deformers = [file for file in files if "deformer" in file]
@@ -247,14 +247,14 @@ class ShotImporter:
             # Create the actual geometry node.
             character_node = assets_node.createNode("geo", node_name=character_instance)
             abc_node = character_node.createNode("alembic", node_name="IN_CACHES")
-            abc_node.parm("fileName").set(os.path.join(export_directory, character))
+            abc_node.parm("fileName").set(os.path.join(export_directory, character).replace("\\", "/"))
 
             self.add_asset_category(character_node, category_name="Character")
 
             # Create the materialx node and assign it.
             path_to_shading = os.path.join("O:\\", "shows", "IZES", "assets", "Character", character_name, "publishs", "SHD")
             last_version = [directory for directory in self.find_subdirectories(path_to_shading) if directory[0] == "v"][-1]
-            materialx_path = os.path.join(path_to_shading, last_version, "caches", f'SHD_{character_name}.{last_version}.mtlx')
+            materialx_path = os.path.join(path_to_shading, last_version, "caches", f'SHD_{character_name}.{last_version}.mtlx').replace("\\", "/")
 
             material_node = materials_node.createNode("materialx", node_name=f'{character_instance}_mtlx')
             material_node.parm("selection").set("*")
