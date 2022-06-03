@@ -80,7 +80,7 @@ class ShotImporter:
             script_callback_language=hou.scriptLanguage.Python,
         ))
         
-        # Add animated version parameter.
+        # Add static version parameter.
         versions_settings_folder.addParmTemplate(hou.MenuParmTemplate(
             "setDressVersions",
             "SetDress",
@@ -88,6 +88,25 @@ class ShotImporter:
             script_callback="hou.phm().importer.create_setdress_nodes(kwargs['node'])",
             script_callback_language=hou.scriptLanguage.Python,
         ))
+        
+        # Add camera version parameter.
+        versions_settings_folder.addParmTemplate(hou.MenuParmTemplate(
+            "cameraVersions",
+            "Camera",
+            ["-----[Select]-----"],
+            script_callback="hou.phm().importer.create_camera_node(kwargs['node'])",
+            script_callback_language=hou.scriptLanguage.Python,
+        ))
+
+        # Add refresh versions button.
+        versions_settings_folder.addParmTemplate(
+            hou.ButtonParmTemplate(
+                "debugCam",
+                "Debug Cam",
+                script_callback="hou.phm().importer.create_camera_node(kwargs['node'])",
+                script_callback_language=hou.scriptLanguage.Python
+            )
+        )
 
         # Add refresh versions button.
         versions_settings_folder.addParmTemplate(
@@ -154,7 +173,7 @@ class ShotImporter:
         versions = [version for version in versions if version[0] == "v"]
         versions.reverse()
 
-        for version_name in ["characterVersions", "setDressExtendVersions", "setDressVersions"]:
+        for version_name in ["characterVersions", "setDressExtendVersions", "setDressVersions", "cameraVersions"]:
             self.update_menu_list(hou_node, version_name, versions, reset_index=True)
             if(len(versions) > 0): hou_node.parm(version_name).set(1)
 
@@ -401,7 +420,7 @@ class ShotImporter:
                     asset_node.parm("ar_operator_graph").set(asset_node.relativePathTo(material_node))
 
                     self.add_asset_category(material_node, category_name="SetDressing")
-            
+        
     def remove_setdress_nodes(self, hou_node) -> None:
         """Remove all the setdressing generated nodes.
 
@@ -409,6 +428,52 @@ class ShotImporter:
             hou_node (class: `hou.Node`): The node to edit.
         """
         self.remove_nodes_from_category(hou_node, category_name="SetDressing")
+
+    def create_camera_node(self, hou_node) -> None:
+        """Get the camera file and create the nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        print("Import camera.")
+        # Clear the previous camera node generated.
+        self.remove_camera_node(hou_node)
+
+        # Find the data to properly find the files.
+        sequence = self.get_parm_value(hou_node, "sequences")
+        shot = self.get_parm_value(hou_node, "shots")
+        version = self.get_parm_value(hou_node, "characterVersions")
+
+        # Get files to import.
+        export_directory = os.path.join("O:\\", "shows", "IZES", "sequences", sequence, shot, "publishs", "ANM", version, "caches")
+        # files = [file for file in os.listdir(export_directory) if os.path.isfile(os.path.join(export_directory, file)) and ".abc" in file]
+        files = ["$HIP/Desktop/camera_untitled.abc"]
+
+        # Build objects.
+        assets_node = hou_node.node("ASSETS")
+        for file in files:
+            if(not "camera" in file):
+                continue
+            
+            # Create camera node.
+            camera_node = assets_node.createNode("alembicarchive", node_name="CAMERA")
+            camera_node.parm("fileName").set(file)
+            camera_node.parm("buildHierarchy").pressButton()
+
+            self.add_asset_category(camera_node, category_name="Camera")
+
+            # Find the camera object and set the resolution.
+            camera_object = camera_node.node("Camera").node("Camera")
+            camera_object.parm("resx").set("1920")
+            camera_object.parm("resy").set("1080")
+        
+    def remove_camera_node(self, hou_node) -> None:
+        """Remove the camera generated nodes.
+
+        Args:
+            hou_node (class: `hou.Node`): The node to edit.
+        """
+        self.remove_nodes_from_category(hou_node, category_name="Camera")
 
     def remove_assets(self, hou_node) -> None:
         """Function to remove all the assets generated on shot loading.
