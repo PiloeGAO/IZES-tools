@@ -1,5 +1,7 @@
 # IZES-tools
-Toolset for the IZES Project
+Toolset for "Ferme les Yeux" (Project IZES) - https://vimeo.com/730542293
+
+**Since the project is finished, this repository is only available for archival reasons.**
 
 ## Houdini:
 *Warning: Only tested version: Houdini 18.5.696*
