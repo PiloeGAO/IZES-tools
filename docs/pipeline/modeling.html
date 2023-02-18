@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modeling Tasks &mdash; IZES-Tools 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rigging Tasks" href="rigging.html" />
+    <link rel="prev" title="Pipeline" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: orange" >
+            <a href="../index.html" class="icon icon-home"> IZES-Tools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Pipeline</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Modeling Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modeling">Modeling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retopo">Retopo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uv">UV</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rigging.html">Rigging Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setdressing.html">Set Dressing Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shading.html">Shading Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../houdini/index.html">Houdini</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maya/index.html">Maya</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: orange" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IZES-Tools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Pipeline</a> &raquo;</li>
+      <li>Modeling Tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pipeline/modeling.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="index.html" class="btn btn-neutral float-left" title="Pipeline" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rigging.html" class="btn btn-neutral float-right" title="Rigging Tasks" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modeling-tasks">
+<span id="pipeline-modeling-tasks"></span><h1>Modeling Tasks<a class="headerlink" href="#modeling-tasks" title="Permalink to this headline"></a></h1>
+<p>All scenes part of the Modelings Steps need to have the proper hierarchy (please see <a class="reference internal" href="../maya/modeling/index.html#maya-modeling-tools"><span class="std std-ref">this page</span></a> automated tools).</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Inputs</p></th>
+<th class="head"><p>Outputs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td><p>Modeling (.ma, .abc)</p></td>
+</tr>
+</tbody>
+</table>
+<section id="modeling">
+<span id="pipeline-modeling-tasks-modeling"></span><h2>Modeling<a class="headerlink" href="#modeling" title="Permalink to this headline"></a></h2>
+<p>In this task state, the artist must create the asset normaly like any realistic object.</p>
+<figure class="align-center" id="id1">
+<a class="with-shadow reference internal image-reference" href="../_images/pipeline_modeling_modeling_example.png"><img alt="Image of a correctly modeled book." class="with-shadow" src="../_images/pipeline_modeling_modeling_example.png" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Exemple of a correctly modeled book.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="retopo">
+<span id="pipeline-modeling-tasks-retopo"></span><h2>Retopo<a class="headerlink" href="#retopo" title="Permalink to this headline"></a></h2>
+<p>The next step of the process is to convert the modeling to mosaics.</p>
+<p>To do that, the previously published ABC from Modeling need to be imported inside of Houdini.</p>
+<figure class="align-center" id="id2">
+<a class="with-shadow reference internal image-reference" href="../_images/pipeline_modeling_retopo_example.png"><img alt="Image of a usual nodegraph for retopology inside of houdini." class="with-shadow" src="../_images/pipeline_modeling_retopo_example.png" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Simple graph for converting a book to mosaics.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<dl>
+<dt>Steps:</dt><dd><ol class="arabic simple">
+<li><p>Importing the ABC inside of Houdini.
+Also you need to unpack and convert the mesh to allow editing.</p></li>
+<li><p>Make the graph to generate <a class="reference internal" href="../houdini/modeling/index.html#houdini-modeling-tools"><span class="std std-ref">mosaics</span></a> (Don’t forget to use the <em>normal</em> node to set them on <em>Points</em> instead of <em>Vertices</em>).</p></li>
+<li><p>Don’t forget to use the <a class="reference internal" href="../houdini/export/set_alembic_path.html#houdini-set-alembic-path"><span class="std std-ref">Set Alembic Path</span></a> node after doing modeling to keep the groups on export.</p></li>
+</ol>
+<figure class="align-center" id="id3">
+<a class="with-shadow reference internal image-reference" href="../_images/pipeline_modeling_retopo_set-alembic-path_ui.png"><img alt="Example of setup of the *set alembic path* node." class="with-shadow" src="../_images/pipeline_modeling_retopo_set-alembic-path_ui.png" style="width: 487px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of a setup to set the path inside of an alembic.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<ol class="arabic simple" start="4">
+<li><p>Use the <a class="reference internal" href="../houdini/export/alembic_to_publish.html#houdini-alembic-to-publish"><span class="std std-ref">Alembic To Publish</span></a> node to save the alembic in the appropriate publish directory (everything is setup by using SGTK).</p></li>
+</ol>
+</dd>
+</dl>
+</section>
+<section id="uv">
+<span id="pipeline-modeling-tasks-uv"></span><h2>UV<a class="headerlink" href="#uv" title="Permalink to this headline"></a></h2>
+<p><strong>This step is really important because the</strong> <a class="reference internal" href="rigging.html#pipeline-rigging-tasks"><span class="std std-ref">rigging</span></a> <strong>departement need a structured hierarchy for automation.</strong></p>
+<dl>
+<dt>Steps:</dt><dd><ol class="arabic">
+<li><p>Create the structure by using the script provided [<a class="reference internal" href="../maya/modeling/index.html#maya-build-asset-structure"><span class="std std-ref">this page</span></a>].</p></li>
+<li><p>Import the previous steps:</p>
+<ul>
+<li><p>The modeling need to be stored in the <em>MI_GRP</em>.</p></li>
+<li><p>The retopolo need to be stored in the folowing directories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Mosaic_Baked –&gt; For the actual pieces.</p></li>
+<li><p>Mosaic –&gt; Joints, important for shading.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</li>
+<li><p><strong>REMOVE ALL THE NAMESPACES FROM THE SCENE.</strong></p></li>
+</ol>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rigging.html" class="btn btn-neutral float-right" title="Rigging Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Leo Depoix (PiloeGAO).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
